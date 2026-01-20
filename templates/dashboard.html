@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | CinemaPulse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/movies.css') }}">
+    <style>
+        body { background-color: #0d0d0d; color: white; font-family: 'Poppins', sans-serif; margin: 0; }
+        
+        /* Professional Hero Section */
+        .hero-banner {
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2), #0d0d0d), 
+                        url('https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=2070');
+            background-size: cover;
+            background-position: center;
+            border-bottom: 1px solid #222;
+        }
+        .hero-banner h1 { font-size: 3.5rem; margin-bottom: 0; }
+        .hero-banner h1 span { color: #e50914; }
+        .hero-banner p { font-size: 1.2rem; color: #aaa; margin-top: 10px; }
+
+        
+        .main-content {
+            max-width: 1200px; 
+            margin: 0 auto;    
+            padding: 60px 20px; 
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-left: 4px solid #e50914;
+            padding-left: 15px;
+        }
+
+       
+        .placeholder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .movie-card-mock {
+            height: 350px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            border: 1px solid #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #444;
+            transition: 0.3s;
+        }
+        .movie-card-mock:hover { border-color: #e50914; transform: translateY(-5px); }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="hero-banner">
+        <h1>Welcome to your Cinema<span>Pulse</span></h1>
+        <p>The heart of cinema in your hands.</p>
+    </div>
+
+   <div class="main-content">
+    <div class="section-header">
+        <h2 style="margin: 0;">Top <span style="font-weight: 300;">30 Movies</span></h2>
+    </div>
+
+    <div class="placeholder-grid">
+        {% for movie in movies %}
+        <div class="movie-card">
+            <div class="poster-box">
+                <img src="https://placehold.co/400x600/1a1a1a/white?text={{ movie.title|replace(' ', '+') }}" alt="{{ movie.title }}">
+                <div class="overlay">
+                    <button class="feedback-btn" onclick="openFeedback('{{ movie.title }}')">Rate Movie</button>
+                </div>
+            </div>
+            <div class="movie-info">
+                <h3>{{ movie.title }}</h3>
+                <p>{{ movie.year }} • ⭐ {{ movie.rating }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="feedbackModal" class="modal">
+    <div class="modal-content">
+        <h2 id="modalMovieTitle">Feedback</h2>
+        <form action="{{ url_for('submit_feedback') }}" method="POST">
+            <input type="hidden" name="movie_title" id="hiddenMovieTitle">
+            <label>Rating:</label>
+            <select name="rating" required>
+                <option value="5">⭐⭐⭐⭐⭐ (Excellent)</option>
+                <option value="4">⭐⭐⭐⭐ (Good)</option>
+                <option value="3">⭐⭐⭐ (Average)</option>
+                <option value="2">⭐⭐ (Poor)</option>
+                <option value="1">⭐ (Terrible)</option>
+            </select>
+            <label>Your Thoughts:</label>
+            <textarea name="comment" rows="4" placeholder="What did you think?" required></textarea>
+            <div class="modal-buttons">
+                <button type="submit" class="submit-btn">Send Pulse</button>
+                <button type="button" class="close-btn" onclick="closeFeedback()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="feedbackModal" class="modal">
+        </div>
+
+    <script>
+        function openFeedback(title) {
+            document.getElementById('feedbackModal').style.display = 'block';
+            document.getElementById('modalMovieTitle').innerText = "Feedback for: " + title;
+            document.getElementById('hiddenMovieTitle').value = title;
+        }
+
+        function closeFeedback() {
+            document.getElementById('feedbackModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            let modal = document.getElementById('feedbackModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+</head> </html>

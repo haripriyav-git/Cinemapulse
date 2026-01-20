@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/movies.css') }}">
+    <style>
+        body { background: #0d0d0d; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: white; font-family: sans-serif; }
+        .auth-card { background: #1a1a1a; padding: 40px; border-radius: 12px; width: 380px; border-top: 4px solid #e50914; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #333; }
+        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #666; }
+        .tab.active { color: white; border-bottom: 2px solid #e50914; font-weight: bold; }
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #333; color: white; border-radius: 5px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; background: #e50914; border: none; color: white; font-weight: bold; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <h2 style="text-align: center; margin-bottom: 30px;">Cinema<span style="color:#e50914">Pulse</span></h2>
+        <div class="tabs">
+            <div id="t1" class="tab active" onclick="toggleAuth('login')">Login</div>
+            <div id="t2" class="tab" onclick="toggleAuth('signup')">Create Account</div>
+        </div>
+
+        {% if error %}<p style="color: #e50914; text-align: center; font-size: 14px;">{{ error }}</p>{% endif %}
+
+        <div id="login-sec" class="form-section active">
+            <form action="{{ url_for('login') }}" method="POST">
+                <input type="email" name="username" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit" class="btn">SIGN IN</button>
+            </form>
+            <p style="text-align:center"><a href="{{ url_for('forgot_password') }}" style="color:#888; font-size:12px; text-decoration:none;">Forgot Password?</a></p>
+        </div>
+
+        <div id="signup-sec" class="form-section">
+            <form action="{{ url_for('signup') }}" method="POST">
+                <input type="text" name="name" placeholder="Full Name" required>
+                <input type="email" name="email" placeholder="Email Address" required>
+                <input type="password" name="password" placeholder="Create Password" required>
+                <button type="submit" class="btn">JOIN THE COMMUNITY</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleAuth(mode) {
+            document.getElementById('login-sec').classList.toggle('active', mode === 'login');
+            document.getElementById('signup-sec').classList.toggle('active', mode === 'signup');
+            document.getElementById('t1').classList.toggle('active', mode === 'login');
+            document.getElementById('t2').classList.toggle('active', mode === 'signup');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CinemaPulse | Share Your Insights</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/movies.css') }}">
+    <style>
+        body { background-color: #0d0d0d; color: white; font-family: 'Poppins', sans-serif; margin: 0; }
+        .hero { 
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center; 
+            padding: 0 20px; 
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), 
+                        url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070');
+            background-size: cover;
+            background-position: center;
+        }
+        .hero h1 { font-size: 4rem; margin-bottom: 10px; }
+        .hero h1 span { color: #e50914; }
+        .btn-red { background: #e50914; color: white; padding: 15px 40px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; margin: 10px; display: inline-block; transition: 0.3s; }
+        .btn-red:hover { transform: scale(1.05); background: #b20710; }
+        .features { display: flex; justify-content: center; gap: 30px; padding: 80px 50px; background: #080808; }
+        .card { background: #1a1a1a; padding: 40px; border-radius: 12px; width: 320px; border: 1px solid #333; transition: 0.3s; }
+        .card:hover { border-color: #e50914; transform: translateY(-10px); }
+        .card h3 { color: #e50914; margin-top: 0; }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    
+    <div class="hero">
+        <h1>Cinema<span>Pulse</span></h1>
+        <p style="font-size: 1.4rem; color: #ccc;">Your ultimate platform for cinematic discovery and feedback.</p>
+        <div class="cta">
+            <a href="{{ url_for('login') }}" class="btn-red">Get Started</a>
+            <a href="{{ url_for('signup') }}" style="color: white; text-decoration: none; margin-left: 20px; font-weight: bold;">Join the Community</a>
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="card">
+            <h3>⭐ Detailed Ratings</h3>
+            <p>Rate the latest blockbusters on a scale of 1 to 5 and help others decide what to watch.</p>
+        </div>
+        <div class="card">
+            <h3>✍️ Honest Reviews</h3>
+            <p>Share your personal thoughts and cinematic insights with a community of film enthusiasts.</p>
+        </div>
+        <div class="card">
+            <h3>📈 Audience Pulse</h3>
+            <p>See real-time feedback trends and discover which movies are currently capturing the audience.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Support Center | CinemaPulse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/movies.css') }}">
+    <style>
+        body { background-color: #0d0d0d; color: white; font-family: 'Poppins', sans-serif; margin: 0; }
+        .support-container { 
+            max-width: 900px; 
+            margin: 60px auto; 
+            padding: 40px; 
+            background: #1a1a1a; 
+            border-radius: 15px; 
+            border-left: 5px solid #e50914;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h1 span { color: #e50914; }
+        .faq-item { margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 20px; }
+        .faq-item:last-child { border-bottom: none; }
+        .question { color: #e50914; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; }
+        .answer { color: #ccc; line-height: 1.6; }
+        .contact-box { background: #222; padding: 20px; border-radius: 8px; margin-top: 20px; text-align: center; }
+        .btn-red { background: #e50914; color: white; padding: 10px 25px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="support-container">
+        <h1>CinemaPulse <span>Help Center</span></h1>
+        <p style="color: #888; margin-bottom: 40px;">Need help sharing your movie insights? Find answers to common questions below.</p>
+
+        <div class="faq-section">
+            <div class="faq-item">
+                <div class="question">How do I share my feedback?</div>
+                <div class="answer">Log in to your account, browse the movie dashboard, and click "Give Feedback" on the film you've watched. You can provide both a star rating and written comments.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="question">I forgot my password. How do I reset it?</div>
+                <div class="answer">Click the "Forgot Password" link on the login page. Enter your registered email, and we will send a recovery link to help you reset your Pulse credentials.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="question">Where can I see the latest community pulse?</div>
+                <div class="answer">Once logged in, the Dashboard displays trending movies and current audience sentiments for the latest releases.</div>
+            </div>
+        </div>
+
+        <div class="contact-box">
+            <h3>Still need assistance?</h3>
+            <p>For technical issues regarding the platform or your account, contact our team.</p>
+            <a href="mailto:support@cinemapulse.com" class="btn-red">Contact Technical Support</a>
+        </div>
+    </div>
+</body>
+</html>

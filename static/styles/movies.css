@@ -1,0 +1,188 @@
+
+:root {
+    --primary-red: #e50914; 
+    --dark-bg: #0d0d0d;    
+    --card-bg: #1a1a1a;    
+    --text-main: #ffffff;
+    --text-muted: #aaaaaa;
+}
+
+body {
+    background-color: var(--dark-bg); 
+    color: var(--text-main);
+    margin: 0;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    line-height: 1.6;
+}
+
+/* --- Navigation Bar --- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 5rem;
+    background: rgba(0, 0, 0, 0.95);
+    border-bottom: 2px solid var(--primary-red);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.logo span { color: var(--primary-red); }
+
+.nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.nav-links a:hover { color: var(--primary-red); }
+
+/* --- Hero & Gateway Section --- */
+.hero-gateway {
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), 
+                url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070');
+    background-size: cover;
+    background-position: center;
+}
+
+.hero-gateway h1 { font-size: 4.5rem; margin: 0; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+.hero-gateway h1 span { color: var(--primary-red); }
+.hero-gateway p { font-size: 1.3rem; color: #ddd; margin-top: 10px; }
+
+
+.auth-card {
+    background: var(--card-bg);
+    padding: 3rem;
+    border-radius: 12px;
+    border: 1px solid #333;
+    width: 380px;
+    margin: 100px auto; 
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    background: #222;
+    border: 1px solid #444;
+    color: white;
+    border-radius: 4px;
+    box-sizing: border-box; 
+}
+
+input:focus { border-color: var(--primary-red); outline: none; }
+
+.btn-primary {
+    background: var(--primary-red);
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: 0.3s;
+}
+
+.btn-primary:hover { transform: scale(1.05); background: #ff0f1e; }
+/* Movie Card Styling */
+.movie-card { background: #1a1a1a; border-radius: 12px; overflow: hidden; transition: 0.3s; }
+.poster-box { position: relative; width: 100%; height: 350px; }
+.poster-box img { width: 100%; height: 100%; object-fit: cover; }
+.overlay { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.7); display: flex; align-items: center; 
+    justify-content: center; opacity: 0; transition: 0.3s; 
+}
+.poster-box:hover .overlay { opacity: 1; }
+.movie-info { padding: 15px; }
+.movie-info h3 { margin: 0; font-size: 1rem; }
+.movie-info p { color: #888; font-size: 0.8rem; margin-top: 5px; }
+
+
+.modal { 
+    display: none; position: fixed; z-index: 1000; left: 0; top: 0; 
+    width: 100%; height: 100%; background: rgba(0,0,0,0.9); 
+}
+.modal-content { 
+    background: #1a1a1a; margin: 10% auto; padding: 30px; 
+    width: 90%; max-width: 400px; border-radius: 15px; border: 1px solid #e50914; 
+}
+.feedback-btn, .submit-btn { 
+    background: #e50914; color: white; border: none; 
+    padding: 10px 20px; border-radius: 5px; cursor: pointer; 
+}
+textarea, select { 
+    width: 100%; margin: 10px 0; padding: 10px; 
+    background: #222; border: 1px solid #444; color: white; 
+}
+.modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
+.close-btn { background: #444; color: white; border: none; padding: 10px 20px; border-radius: 5px; }
+.placeholder-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+.movie-card {
+    background: #141414;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.movie-card:hover {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+.poster-box {
+    position: relative;
+    aspect-ratio: 2/3;
+}
+
+.poster-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.3s;
+}
+
+.poster-box:hover .overlay { opacity: 1; }
+
+.movie-info { padding: 12px; }
+.movie-info h3 { font-size: 0.9rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+
+.modal {
+    display: none; position: fixed; z-index: 2000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.9);
+}
+
