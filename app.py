@@ -10,9 +10,9 @@ app.secret_key = 'cinemapulse_2026_key'
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'your-email@gmail.com' 
-app.config['MAIL_PASSWORD'] = 'your16digitcodehere'   
-app.config['MAIL_DEFAULT_SENDER'] = 'your-email@gmail.com'
+app.config['MAIL_USERNAME'] = 'hpriyasvraman@gmail.com' 
+app.config['MAIL_PASSWORD'] = 'xrfhlytheljtzpvx'   
+app.config['MAIL_DEFAULT_SENDER'] = 'hpriyasvraman@gmail.com'
 mail = Mail(app)
 
 
