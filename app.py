@@ -250,7 +250,7 @@ def dashboard():
     return render_template('dashboard.html', 
                            movies=MOVIES_DATA, 
                            feedbacks=all_feedbacks, 
-                           movie_stats=movie_stats) # <--- THIS FIXES THE ERROR
+                           movie_stats=movie_stats) 
 
 
 
