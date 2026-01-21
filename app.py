@@ -39,26 +39,25 @@ USERS = {"admin@cinema.com": "pulse123"}
 
 
 MOVIES_DATA = [
-    {"rank":1,"title":"Ramayana: The Legend of Prince Rama","year":1993,"rating":9.2,"img":"https://m.media-amazon.com/images/M/MV5BOTNjNTFhZmMtZGY2YS00OTY4LWI2M2MtNjhhZmJjZTgyNWNjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+    {"rank":1,"title":"The Shawshank Redemption","year":1994,"rating":9.3,"img":"https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg"},
     {"rank":2,"title":"Rocketry: The Nambi Effect","year":2022,"rating":8.7,"img":"https://resizing.flixster.com/uFl3KWEoQIaP7EpRoUAFVN6g4uA=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzL2Q1NjdmZTUyLTgyYjgtNGQyNy04OWNjLTI2ODQyZDNkOTY1My5qcGc="},
     {"rank":3,"title":"Nayakan","year":1987,"rating":8.6,"img":"https://m.media-amazon.com/images/M/MV5BNTM3MTU1NWYtZjE3ZC00ODYzLTg0NWYtNDhiYTMxMTAzYzIzXkEyXkFqcGc@._V1_.jpg"},
     {"rank":4,"title":"Jai Bhim","year":2021,"rating":8.8,"img":"https://miro.medium.com/1*y0eu9R_ZzN36LD3dj5x7hw.jpeg"},
     {"rank":5,"title":"777 Charlie","year":2022,"rating":8.7,"img":"https://cdn.sacnilk.com/image/movie/2022/6249.jpg"},
-    {"rank":6,"title":"Manichitrathazhu","year":1993,"rating":8.7,"img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRq18IUM_yd-aQbdT-KUGRQKPSrfv4dLti5cw&s"},
-    {"rank":7,"title":"3 Idiots","year":2009,"rating":8.4,"img":"https://huilahimovie.reviews/wp-content/uploads/2024/10/screen-shot-2021-10-26-at-6.48.45-am.png?w=1024"},
-    {"rank":8,"title":"Taare Zameen Par","year":2007,"rating":8.3,"img":"https://m.media-amazon.com/images/M/MV5BMjA0Nzk1OTM2Ml5BMl5BanBnXkFtZTcwNTEzMzY1MQ@@._V1_QL75_UX380_CR0,0,380,562_.jpg"},
+    {"rank":6,"title":"Manichitrathazhu","year":1993,"rating":8.7,"img":"https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTFuLrVXuPP1tra9hdNn57WNh89EtehGHsc_k-VtnWQLgAPXV2N"},
+    {"rank":7,"title":"3 Idiots","year":2009,"rating":8.4,"img":"https://bollywoodmoviesposter.com/wp-content/uploads/2025/04/IMG-20250407-WA0056.jpg"},
     {"rank":9,"title":"Dangal","year":2016,"rating":8.3,"img":"https://m.media-amazon.com/images/M/MV5BMTQ4MzQzMzM2Nl5BMl5BanBnXkFtZTgwMTQ1NzU3MDI@._V1_QL75_UX380_CR0,0,380,562_.jpg"},
-    {"rank":10,"title":"Kireedam","year":1989,"rating":8.8,"img":"https://m.media-amazon.com/images/M/MV5BZDhjYjI3MGItYzYwZC00MTY2LWEyNTEtM2I0MGVlZTU3ZGM0XkEyXkFqcGdeQXVyMjkxNzQ1NDI@._V1_QL75_UX380_CR0,0,380,562_.jpg"},
-    {"rank":11,"title":"C/o Kancharapalem","year":2018,"rating":8.8,"img":"https://m.media-amazon.com/images/M/MV5BN2ZkYTgxMzMtZTA3YS00N2ZkLWFlYzYtM2VlNjI1MWZkZTE0XkEyXkFqcGdeQXVyMTA4NjE0NjEy@._V1_QL75_UX380_CR0,0,380,562_.jpg"},
-    {"rank":12,"title":"Jersey","year":2019,"rating":8.5,"img":"https://m.media-amazon.com/images/M/MV5BYzE4YWE3OTYtOWEwMC00NTA1LTk2NGEtYjY4YjVlYWFmMmExXkEyXkFqcGdeQXVyOTAzMTYzMzY@._V1_QL75_UX380_CR0,0,380,562_.jpg"},
-    {"rank":13,"title":"Sardar Udham","year":2021,"rating":8.4,"img":"https://m.media-amazon.com/images/M/MV5BZGZlYTI4ZGEtNWI0MC00YzA4LWI2Y2QtNjk4N2RkNDVlZGVmXkEyXkFqcGdeQXVyMTI1NDEyNTM5@._V1_QL75_UX380_CR0,0,380,562_.jpg"},
-    {"rank":14,"title":"Lagaan","year":2001,"rating":8.1,"img":"https://m.media-amazon.com/images/M/MV5BNDYxNWshMTctNmE5OS00NzE0LWEwZTMtODE0YzY3MzVlNjJlXkEyXkFqcGdeQXVyMSM4MzEwNQ@@._V1_QL75_UX380_CR0,0,380,562_.jpg"},
-    {"rank":15,"title":"Sholay","year":1975,"rating":8.1,"img":"https://m.media-amazon.com/images/M/MV5BOGNlNmRkMjctNDVjMi00YzAzLWI2OTgtZTM2ZDE2YmU4ZWFmXkEyXkFqcGdeQXVyNjA3OTI5MjA@._V1_QL75_UX380_CR0,0,380,562_.jpg"},
-    {"rank":16,"title":"Dil Chahta Hai","year":2001,"rating":8.1,"img":"https://m.media-amazon.com/images/M/MV5BODZlZTRiMDAtMDc0Mi00ZTI4LThjN2QtNjQwZDUwZDhlYzUyXkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_QL75_UX380_CR0,0,380,562_.jpg"},
-    {"rank":17,"title":"Gangs of Wasseypur","year":2012,"rating":8.2,"img":"https://m.media-amazon.com/images/M/MV5BMTc5NjY4MjUwNF5BMl5BanBnXkFtZTgwODM3NzM5NzE@._V1_QL75_UX380_CR0,0,380,562_.jpg"},
-    {"rank":18,"title":"Masaan","year":2015,"rating":8.1,"img":"https://m.media-amazon.com/images/M/MV5BMTU4NTYyNjg5MF5BMl5BanBnXkFtZTgwNjY2Mjk5NTE@._V1_QL75_UX380_CR0,0,380,562_.jpg"},
-    {"rank":19,"title":"Andhadhun","year":2018,"rating":8.2,"img":"https://m.media-amazon.com/images/M/MV5BZWZhZDRjODgtOWNmYy00Y2JkLTk0OTEtZGIzMWJkM2UxM2U3XkEyXkFqcGdeQXVyMTkzOTcxOTg@._V1_QL75_UX380_CR0,0,380,562_.jpg"},
-    {"rank":20,"title":"Drishyam","year":2013,"rating":8.3,"img":"https://m.media-amazon.com/images/M/MV5BYmU4NDJmYjAtOTBiMi00ZDI3LWEyNjgtZGRlOWExYTdlZGFkXkEyXkFqcGdeQXVyMjkxNzQ1NDI@._V1_QL75_UX380_CR0,0,380,562_.jpg"}
+    {"rank":10,"title": "Goodfellas", "year": 1990, "rating": 8.7, "img": "https://m.media-amazon.com/images/M/MV5BN2E5NzI2ZGMtY2VjNi00YTRjLWI1MDUtZGY5OWU1MWJjZjRjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+    {"rank":11,"title":"Avatar: Fire and Ash","year":2025,"rating":10,"img":"https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Avatar_Fire_and_Ash_poster.jpeg/250px-Avatar_Fire_and_Ash_poster.jpeg"},
+    {"rank":12,"title":"Jersey","year":2019,"rating":9,"img":"https://m.media-amazon.com/images/M/MV5BZmRiMGIzYWQtZTk1YS00ZTE0LWJlOTUtZmViZTZjOTA1YzAyXkEyXkFqcGc@._V1_.jpg"},
+    {"rank":13,"title":"Sardar Udham","year":2021,"rating":8.4,"img":"https://m.media-amazon.com/images/M/MV5BNWRkOWY0NjQtYzNjNC00MjA0LTk2MzgtNGZlMjM3YTBiMDA0XkEyXkFqcGc@._V1_.jpg"},
+    {"rank":14,"title":"Lagaan","year":2001,"rating":8.9,"img":"https://m.media-amazon.com/images/M/MV5BM2FmODM4OTktOTRjOS00ZTIzLWIzZjAtMDBhOGEzYThkNzMzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+    {"rank":15,"title":"Vikram","year":2022,"rating":10,"img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWd4P3cuGFbsMtu8doLKdoFi-EU-_PJorQ_A&s"},
+    {"rank":16,"title":"The Godfather","year":1972,"rating":9.2,"img":"https://m.media-amazon.com/images/M/MV5BNGEwYjgwOGQtYjg5ZS00Njc1LTk2ZGEtM2QwZWQ2NjdhZTE5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+    {"rank":17,"title":"Ponniyin Selvan 2","year":2023,"rating":10,"img":"https://upload.wikimedia.org/wikipedia/en/5/5e/Ponniyin_Selvan_II.jpg"},
+    {"rank":18,"title":"Masaan","year":2015,"rating":8.9,"img":"https://thereviewmonk.com/assets/media/movies/posters/w300/b958298f4060803c8015f7ae8e732690.jpg"},
+    {"rank":19,"title":"M.S. Dhoni: The Untold Story","year":2016,"rating":10,"img":"https://m.media-amazon.com/images/M/MV5BM2UwZTNkMmItYmYzOS00MTk3LTg3NDgtNzg5ZjYxNTIzNzY4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+    {"rank":20,"title":"Baahubali: The Epic","year":2025,"rating":10,"img":"https://m.media-amazon.com/images/M/MV5BNjYzNDM0MzktMzU5NC00YjAxLWEwZDItYjg3ODUxMDk5MjJmXkEyXkFqcGc@._V1_.jpg"}
 ]
 
 # --- Routes ---
