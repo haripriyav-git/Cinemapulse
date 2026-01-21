@@ -6,6 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 from datetime import datetime
 
+from collections import Counter
+
 
 
 app = Flask(__name__)
@@ -219,18 +221,36 @@ def signup():
     return redirect(url_for('dashboard'))
 
 
-
 @app.route('/dashboard')
-
 def dashboard():
-
     if 'user_email' not in session:
-
         return redirect(url_for('login'))
+    
+    # 1. Fetch all feedback from the database
+    all_feedbacks = Feedback.query.all()
+    
+    # 2. Calculate Vibe Stats for the "Vibe-O-Meter"
+    # This creates a dictionary: {'Movie Title': {'Mind-Blowing': 70, 'Heartwarming': 30}}
+    movie_stats = {}
+    
+    for movie in MOVIES_DATA:
+        # Filter all feedback to find only vibes for this specific movie
+        vibe_list = [f.vibe for f in all_feedbacks if f.movie_title == movie['title']]
+        total = len(vibe_list)
+        
+        if total > 0:
+            counts = Counter(vibe_list)
+            # Convert counts to percentages
+            movie_stats[movie['title']] = {vibe: round((count / total) * 100) for vibe, count in counts.items()}
+        else:
+            # Default empty dict if no one has voted yet
+            movie_stats[movie['title']] = {}
 
-    # Passing the raw MOVIES_DATA because Jinja2 will handle the image URLs
-
-    return render_template('dashboard.html', movies=MOVIES_DATA)
+    # 3. Pass EVERYTHING to the template
+    return render_template('dashboard.html', 
+                           movies=MOVIES_DATA, 
+                           feedbacks=all_feedbacks, 
+                           movie_stats=movie_stats) # <--- THIS FIXES THE ERROR
 
 
 
