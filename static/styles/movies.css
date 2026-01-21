@@ -177,3 +177,39 @@ input:focus { border-color: var(--primary-red); outline: none; }
 .details span {
     color: #f5c518;
 }
+/* --- Vibe-O-Meter Unique Feature --- */
+.vibe-meter-section {
+    margin-top: 12px;
+}
+
+.vibe-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.vibe-meter-container {
+    background: #222;
+    height: 8px;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex; /* Allows multiple vibe segments to sit side-by-side */
+    border: 1px solid #333;
+}
+
+.vibe-segment {
+    height: 100%;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Vibe Color Palette - CinemaPulse Custom */
+.vibe-Mind-Blowing { background: #e50914; box-shadow: 0 0 10px rgba(229, 9, 20, 0.4); }
+.vibe-Heartwarming { background: #ff69b4; }
+.vibe-Tear-Jerker { background: #3498db; }
+.vibe-Edge-of-Seat { background: #f1c40f; }
+.vibe-Pure-Joy { background: #2ecc71; }
+.vibe-Thought-Provoking { background: #9b59b6; }
