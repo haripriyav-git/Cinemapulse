@@ -6,100 +6,34 @@
     <title>Dashboard | CinemaPulse</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/movies.css') }}">
     <style>
-        :root {
-            --accent-red: #e50914;
-            --card-bg: #1a1a1a;
-            --text-gray: #aaa;
-        }
-
-        body { background-color: #0d0d0d; color: white; font-family: 'Poppins', sans-serif; margin: 0; }
-
-        /* Hero Banner */
-        .hero-banner {
-            height: 50vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.6), #0d0d0d), 
-                        url('https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=2070');
-            background-size: cover;
-            background-position: center;
-        }
-        .hero-banner h1 { font-size: 3rem; margin: 0; }
+        :root { --accent-red: #e50914; --card-bg: #1a1a1a; --text-gray: #aaa; }
+        body { background-color: #0d0d0d; color: white; font-family: 'Poppins', sans-serif; margin: 0; overflow-x: hidden; }
+        .hero-banner { height: 50vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: linear-gradient(to bottom, rgba(0,0,0,0.6), #0d0d0d), url('https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=2070'); background-size: cover; background-position: center; }
         .hero-banner h1 span { color: var(--accent-red); }
-
-        /* Main Layout */
         .main-content { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-
-        .section-header {
-            border-left: 4px solid var(--accent-red);
-            padding-left: 15px;
-            margin-bottom: 30px;
-        }
-
-        /* Movie Grid */
-        .placeholder-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 25px;
-        }
-
-        .movie-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #222;
-            transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
+        .section-header { border-left: 4px solid var(--accent-red); padding-left: 15px; margin-bottom: 30px; }
+        .placeholder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
+        .movie-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #222; transition: 0.3s ease; cursor: pointer; }
         .movie-card:hover { border-color: var(--accent-red); transform: translateY(-5px); }
-        
         .poster-box { position: relative; height: 320px; }
         .bg-poster { width: 100%; height: 100%; object-fit: cover; }
-        
-        .rank-badge {
-            position: absolute; top: 10px; left: 10px;
-            background: var(--accent-red); padding: 5px 12px; 
-            border-radius: 5px; font-weight: bold; font-size: 0.9rem;
-        }
-
+        .rank-badge { position: absolute; top: 10px; left: 10px; background: var(--accent-red); padding: 5px 12px; border-radius: 5px; font-weight: bold; font-size: 0.9rem; }
         .movie-info { padding: 15px; }
         .movie-info h3 { margin: 0; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .details { color: var(--text-gray); font-size: 0.85rem; margin-top: 5px; }
-
-        /* UNIQUE FEATURE: Vibe-O-Meter Styling */
-        .vibe-meter-container {
-            background: #333;
-            height: 8px;
-            width: 100%;
-            border-radius: 4px;
-            margin-top: 10px;
-            overflow: hidden;
-            display: flex;
-        }
-
+        .vibe-meter-container { background: #333; height: 8px; width: 100%; border-radius: 4px; margin-top: 10px; overflow: hidden; display: flex; }
         .vibe-segment { height: 100%; transition: width 0.5s ease; }
-        
-        /* Vibe Colors Mapping */
         .vibe-Mind-Blowing { background: #e50914; }
         .vibe-Heartwarming { background: #ff69b4; }
         .vibe-Tear-Jerker { background: #3498db; }
         .vibe-Edge-of-Seat { background: #f1c40f; }
         .vibe-Pure-Joy { background: #2ecc71; }
         .vibe-Thought-Provoking { background: #9b59b6; }
-
-        /* Feedback Feed */
-        .feedback-feed { margin-top: 60px; background: #111; padding: 25px; border-radius: 12px; }
+        .feedback-feed { margin-top: 60px; background: #111; padding: 25px; border-radius: 12px; border: 1px solid #222; }
         .feed-item { border-bottom: 1px solid #222; padding: 15px 0; }
         .vibe-tag { color: var(--accent-red); font-weight: bold; background: rgba(229, 9, 20, 0.1); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
-
-        /* Modals */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
-        .modal-content { 
-            background: var(--card-bg); margin: 8% auto; padding: 30px; 
-            width: 90%; max-width: 450px; border-radius: 12px; border: 1px solid #333;
-        }
+        .modal-content { background: var(--card-bg); margin: 8% auto; padding: 30px; width: 90%; max-width: 450px; border-radius: 12px; border: 1px solid #333; }
         .submit-btn { background: var(--accent-red); color: white; border: none; padding: 12px; cursor: pointer; border-radius: 5px; width: 100%; font-weight: bold; margin-top: 10px; }
         .close-btn { background: #444; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; width: 100%; margin-top: 10px; }
     </style>
@@ -125,45 +59,48 @@
             <h2>Trending <span style="font-weight: 300;">Pulses</span></h2>
         </div>
 
-       <div class="placeholder-grid">
-    {% for movie in movies %}
-    <div class="movie-card" onclick="openFeedback('{{ movie.title }}')">
-        <div class="poster-box">
-            <img src="{{ movie.img }}" class="bg-poster" alt="{{ movie.title }}" loading="lazy">
-            <div class="rank-badge">#{{ movie.rank }}</div>
-        </div>
+        <div class="placeholder-grid">
+            {% for movie in movies %}
+            <div class="movie-card" onclick="openFeedback('{{ movie.title }}')">
+                <div class="poster-box">
+                    <img src="{{ movie.img }}" class="bg-poster" alt="{{ movie.title }}" loading="lazy">
+                    <div class="rank-badge">#{{ movie.rank }}</div>
+                </div>
 
-        <div class="movie-info">
-            <h3>{{ movie.title }}</h3>
-            <div class="details">{{ movie.year }} • ⭐ {{ movie.rating }}</div>
-
-            <div style="font-size: 0.65rem; color: var(--text-gray); margin-top: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Community Pulse</div>
-            
-            <div class="vibe-meter-container">
-                {% if movie_stats and movie_stats.get(movie.title) %}
-                    {% for vibe_name, percent in movie_stats[movie.title].items() %}
-                        <div class="vibe-segment vibe-{{ vibe_name.replace(' ', '-') }}" 
-                             style="width: {{ percent }}%;" 
-                             title="{{ vibe_name }}: {{ percent }}%">
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div style="width: 100%; background: #222;"></div>
-                {% endif %}
-            </div>
+                <div class="movie-info">
+                    <h3>{{ movie.title }}</h3>
+                    <div class="details">{{ movie.year }} • ⭐ {{ movie.rating }}</div>
+                    <div style="font-size: 0.65rem; color: var(--text-gray); margin-top: 12px; text-transform: uppercase;">Community Pulse</div>
+                    
+                    <div class="vibe-meter-container">
+                        {% if movie_stats and movie_stats.get(movie.title) %}
+                            {% for vibe_name, percent in movie_stats[movie.title].items() %}
+                                <div class="vibe-segment vibe-{{ vibe_name.replace(' ', '-') }}" 
+                                     style="width: {{ percent ~ '%' }};" 
+                                     title="{{ vibe_name }}: {{ percent }}%">
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div style="width: 100%; background: #222;"></div>
+                        {% endif %}
+                    </div>
+                </div> </div> {% endfor %}
         </div>
-    </div>
-    {% endfor %}
-</div>
 
         <div class="feedback-feed">
             <h3 style="border-bottom: 1px solid var(--accent-red); padding-bottom: 10px; margin-bottom: 20px;">Live Community Feed</h3>
-            {% for entry in feedbacks|reverse %}
-            <div class="feed-item">
-                <strong>{{ entry.user_email.split('@')[0] }}</strong> felt <span class="vibe-tag">{{ entry.vibe }}</span> about <em>{{ entry.movie_title }}</em>
-                <p style="color: var(--text-gray); margin: 8px 0 0 0; font-size: 0.9rem;">"{{ entry.comment }}"</p>
-            </div>
-            {% endfor %}
+            {% if feedbacks %}
+                {% for entry in feedbacks|reverse %}
+                <div class="feed-item">
+                    <strong>{{ entry.user_name }}</strong> felt 
+                    <span class="vibe-tag">{{ entry.vibe }}</span> about 
+                    <em>{{ entry.movie_title }}</em>
+                    <p style="color: var(--text-gray); margin: 8px 0 0 0; font-size: 0.9rem;">"{{ entry.comment }}"</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: var(--text-gray);">No pulses recorded yet.</p>
+            {% endif %}
         </div>
     </div>
 
@@ -172,13 +109,11 @@
             <h2 id="modalMovieTitle" style="margin-top: 0; color: var(--accent-red);">Movie Feedback</h2>
             <form action="{{ url_for('submit_feedback') }}" method="POST">
                 <input type="hidden" name="movie_title" id="hiddenMovieTitle">
-                
-                <label style="font-size: 0.8rem; color: var(--text-gray);">Score (1-10)</label>
-                <input type="number" name="rating" min="1" max="10" value="10" required>
-
-                <label style="font-size: 0.8rem; color: var(--text-gray);">What's the vibe?</label>
-                <select name="vibe" required>
-                    <option value="" disabled selected>Select an emotion...</option>
+                <label style="color:#aaa; font-size: 0.8rem;">Score (1-10)</label>
+                <input type="number" name="rating" min="1" max="10" value="10" 
+                       style="width:100%; padding:10px; background:#222; color:white; border:1px solid #444; margin-bottom:10px;">
+                <label style="color:#aaa; font-size: 0.8rem;">Vibe</label>
+                <select name="vibe" required style="width:100%; padding:10px; background:#222; color:white; border:1px solid #444; margin-bottom:10px;">
                     <option value="Mind-Blowing">Mind-Blowing 🤯</option>
                     <option value="Heartwarming">Heartwarming ❤️</option>
                     <option value="Tear-Jerker">Tear-Jerker 😢</option>
@@ -186,10 +121,8 @@
                     <option value="Pure-Joy">Pure Joy 😊</option>
                     <option value="Thought-Provoking">Thought-Provoking 🤔</option>
                 </select>
-
-                <label style="font-size: 0.8rem; color: var(--text-gray);">Comment</label>
-                <textarea name="comment" rows="3" placeholder="Tell us more..." required></textarea>
-
+                <textarea name="comment" rows="3" placeholder="Tell us more..." required
+                          style="width:100%; padding:10px; background:#222; color:white; border:1px solid #444;"></textarea>
                 <button type="submit" class="submit-btn">Post Pulse</button>
                 <button type="button" class="close-btn" onclick="closeFeedback()">Cancel</button>
             </form>
@@ -202,16 +135,8 @@
             document.getElementById('modalMovieTitle').innerText = title;
             document.getElementById('hiddenMovieTitle').value = title;
         }
-
-        function closeFeedback() {
-            document.getElementById('feedbackModal').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('feedbackModal')) {
-                closeFeedback();
-            }
-        }
+        function closeFeedback() { document.getElementById('feedbackModal').style.display = 'none'; }
+        window.onclick = function(event) { if (event.target == document.getElementById('feedbackModal')) closeFeedback(); }
     </script>
 </body>
 </html>

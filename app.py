@@ -46,10 +46,11 @@ db = SQLAlchemy(app)
 
 class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_name = db.Column(db.String(100), nullable=False)
     user_email = db.Column(db.String(120), nullable=False)
     movie_title = db.Column(db.String(200), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
-    vibe = db.Column(db.String(50))  # <--- MAKE SURE THIS IS HERE
+    vibe = db.Column(db.String(50))  
     comment = db.Column(db.Text, nullable=False)
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -253,25 +254,30 @@ def dashboard():
                            movie_stats=movie_stats) 
 
 
-
 @app.route('/submit-feedback', methods=['POST'])
 def submit_feedback():
     if 'user_email' not in session:
         return redirect(url_for('login'))
     
-    movie_title = request.form.get('movie_title')
-    vibe = request.form.get('vibe') # <--- CAPTURE FROM HTML
-    
+    # Logic to prevent the NOT NULL error:
+    # 1. Try to get the name from session
+    # 2. If no name, split the email (e.g., 'priya' from 'priya@mail.com')
+    user_display_name = session.get('user_name')
+    if not user_display_name:
+        user_display_name = session['user_email'].split('@')[0].capitalize()
+
     new_entry = Feedback(
+        user_name=user_display_name, # This will now never be 'None'
         user_email=session['user_email'],
-        movie_title=movie_title,
+        movie_title=request.form.get('movie_title'),
         rating=int(request.form.get('rating')),
-        vibe=vibe, # <--- SAVE TO DATABASE
+        vibe=request.form.get('vibe'),
         comment=request.form.get('comment')
     )
     db.session.add(new_entry)
     db.session.commit()
-    flash(f'Pulse recorded! Your {vibe} vibe for {movie_title} is saved.', 'success')
+    
+    flash(f'Pulse recorded by {user_display_name}!', 'success')
     return redirect(url_for('dashboard'))
 
 
