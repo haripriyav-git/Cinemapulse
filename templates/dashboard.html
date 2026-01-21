@@ -116,7 +116,7 @@
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
-                    <div style="background: #2ecc71; padding: 15px; margin-bottom: 20px; border-radius: 5px; text-align: center;">{{ message }}</div>
+                    <div style="background: #2ecc71; padding: 15px; margin-bottom: 20px; border-radius: 8px; text-align: center;">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -129,37 +129,36 @@
             {% for movie in movies %}
             <div class="movie-card" onclick="openFeedback('{{ movie.title }}')">
                 <div class="poster-box">
-                    <img src="{{ movie.img }}" class="bg-poster" alt="{{ movie.title }}">
+                    <img src="{{ movie.img }}" class="bg-poster" alt="{{ movie.title }}" loading="lazy">
                     <div class="rank-badge">#{{ movie.rank }}</div>
                 </div>
-        <div class="movie-info">
-             <h3>{{ movie.title }}</h3>
-                <div class="details">{{ movie.year }} • ⭐ {{ movie.rating }}</div>
 
-                   <div style="font-size: 0.65rem; color: var(--text-gray); margin-top: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Community Pulse</div>
-        <div class="vibe-meter-container">
-        {% if movie_stats and movie_stats[movie.title] %}
-            {% for vibe_name, percent in movie_stats[movie.title].items() %}
-                {# We strip emojis and replace spaces to ensure CSS classes match perfectly #}
-                <div class="vibe-segment vibe-{{ vibe_name.split(' ')[0] }}" 
-                     style="width: {{ percent }}%;" 
-                     title="{{ vibe_name }}: {{ percent }}%"></div>
-            {% endfor %}
-        {% else %}
-            <div style="width: 100%; background: #222;"></div>
-        {% endif %}
-    </div>
-</div>
-            </div>
-            {% endfor %}
+                <div class="movie-info">
+                    <h3>{{ movie.title }}</h3>
+                    <div class="details">{{ movie.year }} • ⭐ {{ movie.rating }}</div>
+
+                    <div style="font-size: 0.65rem; color: var(--text-gray); margin-top: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Community Pulse</div>
+                    
+                    <div class="vibe-meter-container">
+                        {% if movie_stats and movie_stats[movie.title] %}
+                            {% for vibe_name, percent in movie_stats[movie.title].items() %}
+                                <div class="vibe-segment vibe-{{ vibe_name.replace(' ', '-') }}" 
+                                     style="width: {{ percent }}%;" 
+                                     title="{{ vibe_name }}: {{ percent }}%"></div>
+                            {% endfor %}
+                        {% else %}
+                            <div style="width: 100%; background: #222;"></div>
+                        {% endif %}
+                    </div>
+                </div> </div> {% endfor %}
         </div>
 
         <div class="feedback-feed">
-            <h3 style="border-bottom: 1px solid var(--accent-red); padding-bottom: 10px;">Live Community Feed</h3>
+            <h3 style="border-bottom: 1px solid var(--accent-red); padding-bottom: 10px; margin-bottom: 20px;">Live Community Feed</h3>
             {% for entry in feedbacks|reverse %}
             <div class="feed-item">
                 <strong>{{ entry.user_email.split('@')[0] }}</strong> felt <span class="vibe-tag">{{ entry.vibe }}</span> about <em>{{ entry.movie_title }}</em>
-                <p style="color: var(--text-gray); margin: 5px 0 0 0; font-size: 0.9rem;">"{{ entry.comment }}"</p>
+                <p style="color: var(--text-gray); margin: 8px 0 0 0; font-size: 0.9rem;">"{{ entry.comment }}"</p>
             </div>
             {% endfor %}
         </div>
@@ -167,14 +166,14 @@
 
     <div id="feedbackModal" class="modal">
         <div class="modal-content">
-            <h2 id="modalMovieTitle" style="margin-top: 0;">Movie Feedback</h2>
+            <h2 id="modalMovieTitle" style="margin-top: 0; color: var(--accent-red);">Movie Feedback</h2>
             <form action="{{ url_for('submit_feedback') }}" method="POST">
                 <input type="hidden" name="movie_title" id="hiddenMovieTitle">
                 
-                <label>Score (1-10)</label>
+                <label style="font-size: 0.8rem; color: var(--text-gray);">Score (1-10)</label>
                 <input type="number" name="rating" min="1" max="10" value="10" required>
 
-                <label>What's the vibe?</label>
+                <label style="font-size: 0.8rem; color: var(--text-gray);">What's the vibe?</label>
                 <select name="vibe" required>
                     <option value="" disabled selected>Select an emotion...</option>
                     <option value="Mind-Blowing">Mind-Blowing 🤯</option>
@@ -185,7 +184,7 @@
                     <option value="Thought-Provoking">Thought-Provoking 🤔</option>
                 </select>
 
-                <label>Comment</label>
+                <label style="font-size: 0.8rem; color: var(--text-gray);">Comment</label>
                 <textarea name="comment" rows="3" placeholder="Tell us more..." required></textarea>
 
                 <button type="submit" class="submit-btn">Post Pulse</button>
