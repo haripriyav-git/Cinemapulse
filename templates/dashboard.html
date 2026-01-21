@@ -76,14 +76,25 @@
             background: rgba(0,0,0,0.8); 
         }
         .modal-content { 
-            background: #1a1a1a; margin: 10% auto; padding: 30px; 
+            background: #1a1a1a; margin: 5% auto; padding: 30px; 
             width: 90%; max-width: 500px; border-radius: 10px; border: 1px solid #333;
         }
-        form label { display: block; margin: 15px 0 5px; }
-        select, textarea { width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #444; border-radius: 5px; }
+        form label { display: block; margin: 15px 0 5px; color: #e50914; font-weight: bold; }
+        
+        /* Form Inputs */
+        input[type="number"], select, textarea { 
+            width: 100%; padding: 12px; background: #222; color: white; 
+            border: 1px solid #444; border-radius: 5px; box-sizing: border-box;
+        }
+        
         .modal-buttons { margin-top: 20px; display: flex; gap: 10px; }
-        .submit-btn { background: #e50914; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; flex: 1; }
+        .submit-btn { background: #e50914; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; flex: 1; font-weight: bold; }
         .close-btn { background: #444; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+        
+        /* Feedback Feed */
+        .feedback-feed { margin-top: 50px; background: #111; padding: 20px; border-radius: 10px; }
+        .feed-item { border-bottom: 1px solid #222; padding: 15px 0; }
+        .vibe-tag { color: #e50914; font-weight: bold; background: rgba(229, 9, 20, 0.1); padding: 2px 8px; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -128,6 +139,18 @@
             </div>
             {% endfor %}
         </div>
+
+        <div class="feedback-feed">
+            <h2 style="border-bottom: 1px solid #e50914; padding-bottom: 10px;">Community Pulses</h2>
+            {% for entry in feedbacks|reverse %}
+            <div class="feed-item">
+                <strong>{{ entry.user_email }}</strong> gave <strong>{{ entry.movie_title }}</strong> a {{ entry.rating }}/10
+                <br>
+                Vibe: <span class="vibe-tag">{{ entry.vibe }}</span>
+                <p style="color: #aaa; margin-top: 5px;">"{{ entry.comment }}"</p>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 
     <div id="feedbackModal" class="modal">
@@ -136,13 +159,18 @@
             <form action="{{ url_for('submit_feedback') }}" method="POST">
                 <input type="hidden" name="movie_title" id="hiddenMovieTitle">
                 
-                <label>Rating:</label>
-                <select name="rating" required>
-                    <option value="5">⭐⭐⭐⭐⭐ (Excellent)</option>
-                    <option value="4">⭐⭐⭐⭐ (Good)</option>
-                    <option value="3">⭐⭐⭐ (Average)</option>
-                    <option value="2">⭐⭐ (Poor)</option>
-                    <option value="1">⭐ (Terrible)</option>
+                <label>Rating (1-10):</label>
+                <input type="number" name="rating" min="1" max="10" value="9" required>
+
+                <label>How did it make you feel? (Unique Vibe):</label>
+                <select name="vibe" required>
+                    <option value="" disabled selected>Select a vibe...</option>
+                    <option value="Mind-Blowing">Mind-Blowing 🤯</option>
+                    <option value="Heartwarming">Heartwarming ❤️</option>
+                    <option value="Tear-Jerker">Tear-Jerker 😢</option>
+                    <option value="Edge-of-Seat">Edge-of-Seat ⚡</option>
+                    <option value="Pure-Joy">Pure Joy 😊</option>
+                    <option value="Thought-Provoking">Thought-Provoking 🤔</option>
                 </select>
 
                 <label>Your Thoughts:</label>
@@ -159,7 +187,7 @@
     <script>
         function openFeedback(title) {
             document.getElementById('feedbackModal').style.display = 'block';
-            document.getElementById('modalMovieTitle').innerText = "Feedback for: " + title;
+            document.getElementById('modalMovieTitle').innerText = "Record Pulse: " + title;
             document.getElementById('hiddenMovieTitle').value = title;
         }
 
