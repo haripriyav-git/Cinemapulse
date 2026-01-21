@@ -1,10 +1,11 @@
-/* --- Global Variables & Base Styles --- */
+/* --- 1. Global Variables & Base Styles --- */
 :root {
     --primary-red: #e50914; 
     --dark-bg: #0d0d0d;    
     --card-bg: #1a1a1a;    
     --text-main: #ffffff;
     --text-muted: #aaaaaa;
+    --accent-gold: #f5c518;
 }
 
 body {
@@ -13,99 +14,150 @@ body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
     line-height: 1.6;
+    overflow-x: hidden;
 }
 
-/* --- Navigation & Hero --- */
+/* --- 2. Navigation & Hero Section --- */
 .navbar {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 1.2rem 5rem; background: rgba(0, 0, 0, 0.95);
-    border-bottom: 2px solid var(--primary-red); position: sticky; top: 0; z-index: 1000;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 1.2rem 5rem; 
+    background: rgba(0, 0, 0, 0.95);
+    border-bottom: 2px solid var(--primary-red); 
+    position: sticky; 
+    top: 0; 
+    z-index: 1000;
 }
+
 .logo { font-size: 1.6rem; font-weight: 700; text-transform: uppercase; }
 .logo span { color: var(--primary-red); }
-.nav-links a { color: var(--text-muted); text-decoration: none; margin-left: 20px; transition: 0.3s; }
+
+.nav-links a { 
+    color: var(--text-muted); 
+    text-decoration: none; 
+    margin-left: 20px; 
+    transition: 0.3s; 
+}
 .nav-links a:hover { color: var(--primary-red); }
 
 .hero-gateway {
-    height: 90vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), 
+    height: 90vh; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    text-align: center; 
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), 
     url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070') center/cover;
 }
+
 .hero-gateway h1 { font-size: 4.5rem; margin: 0; }
 .hero-gateway h1 span { color: var(--primary-red); }
 
-/* --- Auth & Inputs --- */
+/* --- 3. Professional Vibe Legend Card --- */
+.vibe-legend-card {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    margin: 40px auto;
+    max-width: 1200px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.legend-header h3 { margin: 0 0 10px 0; font-size: 1.4rem; }
+.legend-header h3 span { color: var(--primary-red); }
+
+.legend-header p { 
+    margin: 0 0 25px 0; 
+    color: var(--text-muted); 
+    font-size: 0.95rem; 
+    max-width: 800px;
+}
+
+.legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px 30px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.legend-content { display: flex; flex-direction: column; }
+
+.legend-content strong {
+    color: #fff;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+.vibe-desc {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 2px;
+}
+
+/* --- 4. Auth & Forms --- */
 .auth-card {
-    background: var(--card-bg); padding: 3rem; border-radius: 12px;
-    border: 1px solid #333; width: 380px; margin: 100px auto; text-align: center;
+    background: var(--card-bg); 
+    padding: 3rem; 
+    border-radius: 12px;
+    border: 1px solid #333; 
+    width: 380px; 
+    margin: 100px auto; 
+    text-align: center;
 }
+
 input, textarea, select {
-    width: 100%; padding: 14px; margin: 12px 0; background: #222; border: 1px solid #444;
-    color: white; border-radius: 4px; box-sizing: border-box;
+    width: 100%; 
+    padding: 14px; 
+    margin: 12px 0; 
+    background: #222; 
+    border: 1px solid #444;
+    color: white; 
+    border-radius: 4px; 
+    box-sizing: border-box;
 }
+
 input:focus { border-color: var(--primary-red); outline: none; }
-.btn-primary, .feedback-btn, .submit-btn {
-    background: var(--primary-red); color: white; padding: 12px 30px; border: none;
-    border-radius: 4px; font-weight: 600; cursor: pointer; transition: 0.3s;
+
+.btn-primary, .submit-btn {
+    background: var(--primary-red); 
+    color: white; 
+    padding: 12px 30px; 
+    border: none;
+    border-radius: 4px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: 0.3s;
 }
 
-/* --- Movie Grid & Cards --- */
-.placeholder-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 30px; padding: 40px;
-}
-.movie-card {
-    background: #141414; border-radius: 15px; overflow: hidden;
-    transition: transform 0.3s ease; border: none;
-}
-.movie-card:hover { transform: translateY(-10px) scale(1.05); }
-
-.poster-box, .poster-container { position: relative; height: 400px; width: 100%; }
-.poster-box img, .card-img-top { width: 100%; height: 100%; object-fit: cover; }
-
-.rank-badge {
-    position: absolute; top: 10px; left: 10px; background: rgba(229, 9, 20, 0.9);
-    color: white; padding: 5px 12px; border-radius: 5px; font-weight: bold; z-index: 2;
-}
-
-.overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8); display: flex; align-items: center;
-    justify-content: center; opacity: 0; transition: 0.3s;
-}
-.poster-box:hover .overlay { opacity: 1; }
-
-.movie-info { padding: 15px; }
-.movie-info h3 { margin: 0; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.movie-info p { color: #888; font-size: 0.8rem; margin-top: 5px; }
-
-/* --- Modals --- */
-.modal {
-    display: none; position: fixed; z-index: 2000; left: 0; top: 0;
-    width: 100%; height: 100%; background: rgba(0,0,0,0.9);
-}
-.modal-content {
-    background: #1a1a1a; margin: 10% auto; padding: 30px; width: 90%;
-    max-width: 400px; border-radius: 15px; border: 1px solid var(--primary-red);
-}
-.modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
-.close-btn { background: #444; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+/* --- 5. Movie Grid & Card Styles --- */
 .placeholder-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 25px;
+    gap: 30px;
     padding: 40px;
-    background: #0d0d0d;
+    max-width: 1300px;
+    margin: 0 auto;
 }
 
 .movie-card {
     background: transparent;
     width: 100%;
+    transition: transform 0.3s ease;
 }
+
+.movie-card:hover { transform: translateY(-10px); }
 
 .poster-box {
     position: relative;
-    background: #333; /* Fallback color if image fails */
+    background: #333;
     height: 350px;
     border-radius: 15px;
     display: flex;
@@ -114,42 +166,35 @@ input:focus { border-color: var(--primary-red); outline: none; }
     text-align: center;
     padding: 20px;
     cursor: pointer;
-    overflow: hidden; /* Clips the image to the rounded corners */
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
 }
 
-/* This makes the image fill the box and sit behind the text */
 .bg-poster {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     object-fit: cover;
-    opacity: 0.6; /* Lower this to make text more readable, raise it for a clearer poster */
+    opacity: 0.6;
     z-index: 1;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: 0.3s ease;
 }
 
-.poster-box:hover .bg-poster {
-    transform: scale(1.1);
-    opacity: 0.8;
-}
+.movie-card:hover .bg-poster { opacity: 0.8; transform: scale(1.1); }
 
 .inner-title {
     position: relative;
     color: #ffffff;
     font-size: 1rem;
     font-weight: 600;
-    margin: 0;
-    z-index: 2; /* Sits above the image */
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8); /* Makes text pop over the image */
+    z-index: 2;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
 }
 
 .rank-badge {
     position: absolute;
-    top: 15px;
-    left: 15px;
-    background: #e50914;
+    top: 15px; left: 15px;
+    background: var(--primary-red);
     color: white;
     padding: 2px 8px;
     border-radius: 4px;
@@ -158,29 +203,13 @@ input:focus { border-color: var(--primary-red); outline: none; }
     z-index: 3;
 }
 
-.movie-info {
-    padding: 12px 5px;
-}
+.movie-info { padding: 12px 5px; }
+.movie-info h3 { margin: 0; font-size: 1rem; color: white; }
+.details { color: var(--text-muted); font-size: 0.85rem; margin-top: 5px; }
+.details span { color: var(--accent-gold); }
 
-.movie-info h3 {
-    margin: 0;
-    font-size: 1rem;
-    color: white;
-}
-
-.details {
-    color: #aaaaaa;
-    font-size: 0.85rem;
-    margin-top: 5px;
-}
-
-.details span {
-    color: #f5c518;
-}
-/* --- Vibe-O-Meter Unique Feature --- */
-.vibe-meter-section {
-    margin-top: 12px;
-}
+/* --- 6. Vibe-O-Meter Components --- */
+.vibe-meter-section { margin-top: 12px; }
 
 .vibe-label {
     font-size: 0.65rem;
@@ -197,7 +226,7 @@ input:focus { border-color: var(--primary-red); outline: none; }
     width: 100%;
     border-radius: 10px;
     overflow: hidden;
-    display: flex; /* Allows multiple vibe segments to sit side-by-side */
+    display: flex;
     border: 1px solid #333;
 }
 
@@ -206,46 +235,49 @@ input:focus { border-color: var(--primary-red); outline: none; }
     transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Vibe Color Palette - CinemaPulse Custom */
-.vibe-Mind-Blowing { background: #e50914; box-shadow: 0 0 10px rgba(229, 9, 20, 0.4); }
-.vibe-Heartwarming { background: #ff69b4; }
-.vibe-Tear-Jerker { background: #3498db; }
-.vibe-Edge-of-Seat { background: #f1c40f; }
-.vibe-Pure-Joy { background: #2ecc71; }
-.vibe-Thought-Provoking { background: #9b59b6; }
-/* Vibe Legend Styling */
-.vibe-legend-card {
-    background: var(--card-bg);
-    padding: 25px;
-    border-radius: 12px;
-    border: 1px solid #333;
-    margin-bottom: 40px;
-}
-.vibe-legend-card h3 span { color: var(--accent-red); }
-.legend-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
-}
-.legend-item {
-    display: flex;
-    align-items: center;
-    font-size: 0.9rem;
-    color: #ccc;
-}
+/* --- 7. Color Palette & Status Dots --- */
 .dot {
-    height: 12px;
-    width: 12px;
+    width: 12px; height: 12px;
     border-radius: 50%;
-    display: inline-block;
-    margin-right: 10px;
+    margin-top: 5px;
+    flex-shrink: 0;
 }
 
-/* Matching the exact colors from your Vibe-O-Meter */
-.mind-blowing { background-color: #e50914; }
-.heartwarming { background-color: #ff69b4; }
-.tear-jerker { background-color: #3498db; }
-.edge-seat { background-color: #f1c40f; }
-.pure-joy { background-color: #2ecc71; }
-.thought-provoking { background-color: #9b59b6; }
+/* Collective Vibe Styles */
+.mind-blowing, .vibe-Mind-Blowing { background-color: var(--primary-red); box-shadow: 0 0 10px rgba(229, 9, 20, 0.4); }
+.heartwarming, .vibe-Heartwarming { background-color: #ff69b4; }
+.tear-jerker, .vibe-Tear-Jerker { background-color: #3498db; }
+.edge-seat, .vibe-Edge-of-Seat { background-color: #f1c40f; }
+.pure-joy, .vibe-Pure-Joy { background-color: #2ecc71; }
+.thought-provoking, .vibe-Thought-Provoking { background-color: #9b59b6; }
+
+/* --- 8. Modals --- */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 2000; 
+    left: 0; top: 0;
+    width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.9);
+}
+
+.modal-content {
+    background: #1a1a1a; 
+    margin: 10% auto; 
+    padding: 30px; 
+    width: 90%;
+    max-width: 400px; 
+    border-radius: 15px; 
+    border: 1px solid var(--primary-red);
+}
+
+.modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
+
+.close-btn { 
+    background: #444; 
+    color: white; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+}

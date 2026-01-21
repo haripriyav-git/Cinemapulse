@@ -90,17 +90,56 @@
 
     <div class="main-content">
         <div class="vibe-legend-card">
-            <h3>What is a Cinema<span>Pulse</span>?</h3>
-            <p>The <strong>Vibe-O-Meter</strong> shows how our community felt while watching. Each color represents a unique emotional "pulse":</p>
-            <div class="legend-grid">
-                <div class="legend-item"><span class="dot mind-blowing"></span> <strong>Mind-Blowing:</strong> Intense or brilliant.</div>
-                <div class="legend-item"><span class="dot heartwarming"></span> <strong>Heartwarming:</strong> Comforting and uplifting.</div>
-                <div class="legend-item"><span class="dot tear-jerker"></span> <strong>Tear-Jerker:</strong> Moving or deeply emotional.</div>
-                <div class="legend-item"><span class="dot edge-seat"></span> <strong>Edge-of-Seat:</strong> Thrilling and tense.</div>
-                <div class="legend-item"><span class="dot pure-joy"></span> <strong>Pure Joy:</strong> Happy and funny.</div>
-                <div class="legend-item"><span class="dot thought-provoking"></span> <strong>Thought-Provoking:</strong> Intellectual and deep.</div>
+    <div class="legend-header">
+        <h3>What is a Cinema<span>Pulse</span>?</h3>
+        <p>The <strong>Vibe-O-Meter</strong> shows how our community felt while watching. Each color represents a unique emotional "pulse":</p>
+    </div>
+    
+    <div class="legend-grid">
+        <div class="legend-item">
+            <span class="dot mind-blowing"></span>
+            <div class="legend-content">
+                <strong>Mind-Blowing</strong>
+                <span class="vibe-desc">Intense or brilliant.</span>
             </div>
         </div>
+        <div class="legend-item">
+            <span class="dot heartwarming"></span>
+            <div class="legend-content">
+                <strong>Heartwarming</strong>
+                <span class="vibe-desc">Comforting and uplifting.</span>
+            </div>
+        </div>
+        <div class="legend-item">
+            <span class="dot tear-jerker"></span>
+            <div class="legend-content">
+                <strong>Tear-Jerker</strong>
+                <span class="vibe-desc">Moving or deeply emotional.</span>
+            </div>
+        </div>
+        <div class="legend-item">
+            <span class="dot edge-seat"></span>
+            <div class="legend-content">
+                <strong>Edge-of-Seat</strong>
+                <span class="vibe-desc">Thrilling and tense.</span>
+            </div>
+        </div>
+        <div class="legend-item">
+            <span class="dot pure-joy"></span>
+            <div class="legend-content">
+                <strong>Pure Joy</strong>
+                <span class="vibe-desc">Happy and funny.</span>
+            </div>
+        </div>
+        <div class="legend-item">
+            <span class="dot thought-provoking"></span>
+            <div class="legend-content">
+                <strong>Thought-Provoking</strong>
+                <span class="vibe-desc">Intellectual and deep.</span>
+            </div>
+        </div>
+    </div>
+</div>
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
