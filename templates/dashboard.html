@@ -125,33 +125,36 @@
             <h2>Trending <span style="font-weight: 300;">Pulses</span></h2>
         </div>
 
-        <div class="placeholder-grid">
-            {% for movie in movies %}
-            <div class="movie-card" onclick="openFeedback('{{ movie.title }}')">
-                <div class="poster-box">
-                    <img src="{{ movie.img }}" class="bg-poster" alt="{{ movie.title }}" loading="lazy">
-                    <div class="rank-badge">#{{ movie.rank }}</div>
-                </div>
-
-                <div class="movie-info">
-                    <h3>{{ movie.title }}</h3>
-                    <div class="details">{{ movie.year }} • ⭐ {{ movie.rating }}</div>
-
-                    <div style="font-size: 0.65rem; color: var(--text-gray); margin-top: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Community Pulse</div>
-                    
-                    <div class="vibe-meter-container">
-                        {% if movie_stats and movie_stats[movie.title] %}
-                            {% for vibe_name, percent in movie_stats[movie.title].items() %}
-                                <div class="vibe-segment vibe-{{ vibe_name.replace(' ', '-') }}" 
-                                     style="width: {{ percent }}%;" 
-                                     title="{{ vibe_name }}: {{ percent }}%"></div>
-                            {% endfor %}
-                        {% else %}
-                            <div style="width: 100%; background: #222;"></div>
-                        {% endif %}
-                    </div>
-                </div> </div> {% endfor %}
+       <div class="placeholder-grid">
+    {% for movie in movies %}
+    <div class="movie-card" onclick="openFeedback('{{ movie.title }}')">
+        <div class="poster-box">
+            <img src="{{ movie.img }}" class="bg-poster" alt="{{ movie.title }}" loading="lazy">
+            <div class="rank-badge">#{{ movie.rank }}</div>
         </div>
+
+        <div class="movie-info">
+            <h3>{{ movie.title }}</h3>
+            <div class="details">{{ movie.year }} • ⭐ {{ movie.rating }}</div>
+
+            <div style="font-size: 0.65rem; color: var(--text-gray); margin-top: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Community Pulse</div>
+            
+            <div class="vibe-meter-container">
+                {% if movie_stats and movie_stats.get(movie.title) %}
+                    {% for vibe_name, percent in movie_stats[movie.title].items() %}
+                        <div class="vibe-segment vibe-{{ vibe_name.replace(' ', '-') }}" 
+                             style="width: {{ percent }}%;" 
+                             title="{{ vibe_name }}: {{ percent }}%">
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="width: 100%; background: #222;"></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 
         <div class="feedback-feed">
             <h3 style="border-bottom: 1px solid var(--accent-red); padding-bottom: 10px; margin-bottom: 20px;">Live Community Feed</h3>
