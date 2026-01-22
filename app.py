@@ -154,7 +154,7 @@ def dashboard():
         total = len(vibe_list)
         if total > 0:
             counts = Counter(vibe_list)
-            movie_stats[movie['title']] = {vibe: round((count / total) * 100) for vibe, count in counts.items()}
+            movie_stats[movie['title']] = {vibe: (count / total) * 100 for vibe, count in counts.items()}
         else:
             movie_stats[movie['title']] = {}
 
