@@ -41,55 +41,54 @@ with app.app_context():
 # --- Temporary User Store ---
 USERS = {"admin@cinema.com": "pulse123"}
 
-MOVIES_DATA = # --- Updated MOVIES_DATA with Language, Genre, and Description ---
 MOVIES_DATA = [
     {
         "rank": 1, "title": "The Shawshank Redemption", "year": 1994, "rating": 9.3,
         "lang": "English", "genre": "Drama",
         "desc": "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
-        "img": "https://m.media-amazon.com/images/M/MV5BMDAxYjU2MDMtYjExNi00NThmLTg3NzUtNTE3NzYwMGY2M2UyXkEyXkFqcGdeQXVyMTEzMTI1Mjk3@._V1_QL75_UX380_CR0,0,380,562_.jpg"
+        "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSf1DK32xKMQzqSl8wnY1BLVu_gdwsRYzVSNM6A03r6c-fEwrif8raKzkFRuerw1KHdDICvOw&s=10"
     },
     {
         "rank": 2, "title": "Rocketry: The Nambi Effect", "year": 2022, "rating": 8.7,
         "lang": "Tamil / Hindi", "genre": "Biography / Drama",
         "desc": "Based on the life of ISRO scientist Nambi Narayanan who was falsely accused of espionage and fought for justice.",
-        "img": "https://m.media-amazon.com/images/M/MV5BNmU2M2RhYmItNDU4Yy00YmY5LTg1OGQtYjE3Y2NhM2JjZjI0XkEyXkFqcGdeQXVyMTEzNzg0Mjkx@._V1_QL75_UX380_CR0,0,380,562_.jpg"
+        "img": "https://resizing.flixster.com/uFl3KWEoQIaP7EpRoUAFVN6g4uA=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzL2Q1NjdmZTUyLTgyYjgtNGQyNy04OWNjLTI2ODQyZDNkOTY1My5qcGc="
     },
     {
         "rank": 3, "title": "Nayakan", "year": 1987, "rating": 8.6,
         "lang": "Tamil", "genre": "Epic / Crime",
         "desc": "A common man's evolution from a slum dweller to a feared and respected underworld don in Bombay.",
-        "img": "https://m.media-amazon.com/images/M/MV5BODU2Y2VlZjQtMWJmNy00YmQ0LWFmYWUtY2U0YmI3MGZkM2QwXkEyXkFqcGdeQXVyODEzOTQwNTY@._V1_QL75_UX380_CR0,0,380,562_.jpg"
+        "img": "https://i.pinimg.com/736x/4f/b2/b3/4fb2b3b8cf1ebf2aeec49673c52a79cb.jpg"
     },
     {
         "rank": 4, "title": "Jai Bhim", "year": 2021, "rating": 8.8,
         "lang": "Tamil", "genre": "Legal / Drama",
         "desc": "A brave activist-lawyer fights for justice when a tribal man is unlawfully detained and disappears from police custody.",
-        "img": "https://m.media-amazon.com/images/M/MV5BY2I4MmM1N2EtM2YzOS00OWUzLTkzYzctNDc5NDUxZWQzN2IzXkEyXkFqcGdeQXVyMTMzNzIyNDc1@._V1_QL75_UX380_CR0,0,380,562_.jpg"
+        "img": "https://static.pib.gov.in/WriteReadData/userfiles/image/jai-49C7H.jpg"
     },
     {
         "rank": 5, "title": "777 Charlie", "year": 2022, "rating": 8.7,
         "lang": "Kannada", "genre": "Adventure / Drama",
         "desc": "Dharma is stuck in a rut with his negative lifestyle until a stray dog named Charlie enters and changes his life forever.",
-        "img": "https://m.media-amazon.com/images/M/MV5BMDljNTQ5YjYtZWZlOC00NWVjLTllYmUtYTBmZTY5MGY0NWRiXkEyXkFqcGdeQXVyMTEzNzg0Mjkx@._V1_QL75_UX380_CR0,0,380,562_.jpg"
+        "img": "https://m.media-amazon.com/images/S/pv-target-images/37690c1b70566b17065f54427b3209b18ee4b3780f530a7333ef2b73ec1d1917.jpg"
     },
     {
         "rank": 6, "title": "Manichitrathazhu", "year": 1993, "rating": 8.7,
         "lang": "Malayalam", "genre": "Horror / Thriller",
         "desc": "A psychiatrist arrives at a supposedly haunted ancestral home to solve a mystery involving his friend's wife.",
-        "img": "https://m.media-amazon.com/images/M/MV5BNDhlN2NhMDAtY2Y3OS00N2I3LThhY2ItYTA1ZGY0ZDNmYmU4XkEyXkFqcGdeQXVyMjkxNzQ1NDI@._V1_QL75_UX380_CR0,0,380,562_.jpg"
+        "img": "https://m.media-amazon.com/images/M/MV5BNjllNGZiYjAtMjVjMy00ZGI4LThiZDAtYzFlOGRkY2E0NDA3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
     },
     {
         "rank": 7, "title": "3 Idiots", "year": 2009, "rating": 8.4,
         "lang": "Hindi", "genre": "Comedy / Drama",
         "desc": "Two friends search for their long-lost companion while revisiting their college days and the pressure of the education system.",
-        "img": "https://m.media-amazon.com/images/M/MV5BNTkyOGVjM2ItZGYxMy00NTAyLThjN2QtNjQwZDUwZDhlYzUyXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_QL75_UX380_CR0,0,380,562_.jpg"
+        "img": "https://play-lh.googleusercontent.com/2plinRZ5j5LJ9fLBKbY8LRSmUjcHoJHQGnJtviRlhO9WF7T9eYfzMbPoGKydzKcnVZCI4Z8LXzxUV4Q10pQ=w240-h480-rw"
     },
     {
         "rank": 8, "title": "Taare Zameen Par", "year": 2007, "rating": 8.3,
         "lang": "Hindi", "genre": "Family / Drama",
         "desc": "An unconventional art teacher helps an 8-year-old boy with dyslexia find his true potential.",
-        "img": "https://m.media-amazon.com/images/M/MV5BMjA0Nzk1OTM2Ml5BMl5BanBnXkFtZTcwNTEzMzY1MQ@@._V1_QL75_UX380_CR0,0,380,562_.jpg"
+        "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLKhA9TsgkzaYnU6vWozqFidVVhRcNxqJywYjdYjNVnRftciOf"
     },
     {
         "rank": 9, "title": "Dangal", "year": 2016, "rating": 8.3,
@@ -107,7 +106,7 @@ MOVIES_DATA = [
         "rank": 11, "title": "Avatar: Fire and Ash", "year": 2025, "rating": 10,
         "lang": "English", "genre": "Sci-Fi / Action",
         "desc": "Jake Sully and Neytiri encounter a new, aggressive Na'vi tribe—the Ash People—as survival on Pandora demands fire.",
-        "img": "https://m.media-amazon.com/images/M/MV5BYTJmYTM2NWYtYmEwNC00MDhkLWFkYTMtY2ViNTkzYmQ5ZWFjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+        "img": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQJfdu01GP05dCCbubLMIXZgxz4SqKIpQx92wu9zHT7pXovv-Sn"
     },
     {
         "rank": 12, "title": "Jersey", "year": 2019, "rating": 9,
@@ -131,7 +130,7 @@ MOVIES_DATA = [
         "rank": 15, "title": "Vikram", "year": 2022, "rating": 10,
         "lang": "Tamil", "genre": "Action / Thriller",
         "desc": "A special ops squad tracks down masked vigilantes, uncovering a massive drug syndicate led by a ruthless drug lord.",
-        "img": "https://m.media-amazon.com/images/M/MV5BMmJhYTYxMGEtNjQ5NS00MWZiLWE1N2ItYjJmMWE2Y2I3NjS2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+        "img": "https://m.media-amazon.com/images/M/MV5BNDEyMWQ0ZDktNTY0MC00YWRkLWFlMjQtMDUxMjRlMDhmMmRlXkEyXkFqcGc@._V1_.jpg"
     },
     {
         "rank": 16, "title": "The Godfather", "year": 1972, "rating": 9.2,
@@ -143,7 +142,7 @@ MOVIES_DATA = [
         "rank": 17, "title": "Ponniyin Selvan: 2", "year": 2023, "rating": 10,
         "lang": "Tamil", "genre": "Historical / Action",
         "desc": "Arulmozhi Varman continues his journey to become Rajaraja I, facing deadly conspiracies against the Chola throne.",
-        "img": "https://m.media-amazon.com/images/M/MV5BZWZhODFlNWYtMDVjOS00YWI0LTlmZjktMGExMGI4YmFhMDVjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+        "img": "https://upload.wikimedia.org/wikipedia/en/5/5e/Ponniyin_Selvan_II.jpg"
     },
     {
         "rank": 18, "title": "Masaan", "year": 2015, "rating": 8.9,
