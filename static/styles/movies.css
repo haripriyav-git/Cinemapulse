@@ -304,3 +304,29 @@ body {
     border-radius: 5px; 
     cursor: pointer; 
 }
+/* Styling for new badges and description */
+.movie-badges {
+    display: flex;
+    gap: 8px;
+    margin: 8px 0;
+}
+.badge {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--accent-red);
+    border: 1px solid rgba(229, 9, 20, 0.3);
+    text-transform: uppercase;
+}
+.movie-desc-short {
+    font-size: 0.75rem;
+    color: #888;
+    line-height: 1.4;
+    margin: 10px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

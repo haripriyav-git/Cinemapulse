@@ -151,31 +151,38 @@
 
         <div class="placeholder-grid" id="movieGrid">
             {% for movie in movies %}
-            <div class="movie-card" 
-                 data-vibes="{% if movie_stats.get(movie.title) %}{% for v in movie_stats[movie.title].keys() %}{{ v }} {% endfor %}{% endif %}"
-                 onclick="openFeedback('{{ movie.title }}')">
-                <div class="poster-box">
-                    <img src="{{ movie.img }}" class="bg-poster" alt="{{ movie.title }}" loading="lazy">
-                    <div class="rank-badge">#{{ movie.rank }}</div>
-                </div>
+           <div class="movie-card" onclick="openFeedback('{{ movie.title }}')">
+    <div class="poster-box">
+        <img src="{{ movie.img }}" class="bg-poster" alt="{{ movie.title }}" loading="lazy">
+        <div class="rank-badge">#{{ movie.rank }}</div>
+    </div>
 
-                <div class="movie-info">
-                    <h3>{{ movie.title }}</h3>
-                    <div class="details">{{ movie.year }} • ⭐ {{ movie.rating }}</div>
-                    <div class="vibe-meter-container">
-                        {% if movie_stats and movie_stats.get(movie.title) %}
-                            {% for vibe_name, percent in movie_stats[movie.title].items() %}
-                                <div class="vibe-segment vibe-{{ vibe_name.replace(' ', '-') }}" 
-                                    style="width: {{ percent|int }}%;" 
-                                     title="{{ vibe_name }}: {{ '%.2f'|format(percent) }}%">
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <div style="width: 100%; background: #222;"></div>
-                        {% endif %}
+    <div class="movie-info">
+        <h3>{{ movie.title }}</h3>
+        <div class="details">{{ movie.year }} • ⭐ {{ movie.rating }}</div>
+        
+        <div class="movie-badges">
+            <span class="badge">{{ movie.lang }}</span>
+            <span class="badge">{{ movie.genre }}</span>
+        </div>
+
+        <p class="movie-desc-short">{{ movie.desc }}</p>
+
+        <div style="font-size: 0.65rem; color: var(--text-gray); margin-top: 12px; text-transform: uppercase;">Community Pulse</div>
+        <div class="vibe-meter-container">
+            {% if movie_stats and movie_stats.get(movie.title) %}
+                {% for vibe_name, percent in movie_stats[movie.title].items() %}
+                    <div class="vibe-segment vibe-{{ vibe_name.replace(' ', '-') }}" 
+                         style="--width: {{ percent }}%;" 
+                         title="{{ vibe_name }}: {{ percent }}%">
                     </div>
-                </div>
-            </div>
+                {% endfor %}
+            {% else %}
+                <div style="width: 100%; background: #222;"></div>
+            {% endif %}
+        </div>
+    </div>
+</div>
             {% endfor %}
         </div>
 
