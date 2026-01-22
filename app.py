@@ -3,6 +3,7 @@ from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from collections import Counter
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 
 app = Flask(__name__)
 app.secret_key = 'cinemapulse_2026_key'
@@ -14,6 +15,9 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'hpriyasvraman@gmail.com'
 app.config['MAIL_PASSWORD'] = 'xrfhlytheljtzpvx'  
 app.config['MAIL_DEFAULT_SENDER'] = 'hpriyasvraman@gmail.com'
+# Salt for token security
+app.config['SECURITY_PASSWORD_SALT'] = 'cinema-pulse-salt-secure'
+
 mail = Mail(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cinema.db'
@@ -37,7 +41,6 @@ with app.app_context():
 # --- Temporary User Store ---
 USERS = {"admin@cinema.com": "pulse123"}
 
-
 MOVIES_DATA = [
     {"rank":1,"title":"The Shawshank Redemption","year":1994,"rating":9.3,"img":"https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg"},
     {"rank":2,"title":"Rocketry: The Nambi Effect","year":2022,"rating":8.7,"img":"https://resizing.flixster.com/uFl3KWEoQIaP7EpRoUAFVN6g4uA=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzL2Q1NjdmZTUyLTgyYjgtNGQyNy04OWNjLTI2ODQyZDNkOTY1My5qcGc="},
@@ -59,6 +62,19 @@ MOVIES_DATA = [
     {"rank":19,"title":"M.S. Dhoni: The Untold Story","year":2016,"rating":10,"img":"https://m.media-amazon.com/images/M/MV5BM2UwZTNkMmItYmYzOS00MTk3LTg3NDgtNzg5ZjYxNTIzNzY4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
     {"rank":20,"title":"Baahubali: The Epic","year":2025,"rating":10,"img":"https://m.media-amazon.com/images/M/MV5BNjYzNDM0MzktMzU5NC00YjAxLWEwZDItYjg3ODUxMDk5MjJmXkEyXkFqcGc@._V1_.jpg"}
 ]
+
+# --- Token Helpers ---
+def generate_token(email):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
+
+def confirm_token(token, expiration=1800):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    try:
+        email = serializer.loads(token, salt=app.config['SECURITY_PASSWORD_SALT'], max_age=expiration)
+    except:
+        return False
+    return email
 
 # --- Routes ---
 
@@ -95,6 +111,36 @@ def signup():
     session['user_email'] = email
     return redirect(url_for('dashboard'))
 
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        if email in USERS:
+            token = generate_token(email)
+            reset_url = url_for('reset_with_token', token=token, _external=True)
+            
+            msg = Message("CinemaPulse - Reset Link", recipients=[email])
+            msg.body = f"Click here to reset your password: {reset_url}\nValid for 30 minutes."
+            mail.send(msg)
+            
+            return render_template('forgot_password.html', success_email=email)
+        return render_template('forgot_password.html', error="Email not found.")
+    return render_template('forgot_password.html')
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_with_token(token):
+    email = confirm_token(token)
+    if not email:
+        return "The reset link is invalid or has expired.", 400
+
+    if request.method == 'POST':
+        new_password = request.form.get('password')
+        USERS[email] = new_password
+        flash('Password successfully updated!', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('reset_new_password.html', token=token)
+
 @app.route('/dashboard')
 def dashboard():
     if 'user_email' not in session:
@@ -122,9 +168,7 @@ def submit_feedback():
     if 'user_email' not in session:
         return redirect(url_for('login'))
     
-    user_display_name = session.get('user_name')
-    if not user_display_name:
-        user_display_name = session['user_email'].split('@')[0].capitalize()
+    user_display_name = session['user_email'].split('@')[0].capitalize()
 
     new_entry = Feedback(
         user_name=user_display_name,
@@ -139,18 +183,6 @@ def submit_feedback():
     
     flash(f'Pulse recorded by {user_display_name}!', 'success')
     return redirect(url_for('dashboard'))
-
-@app.route('/forgot-password', methods=['GET', 'POST'])
-def forgot_password():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        if email in USERS:
-            msg = Message("CinemaPulse - Recovery", recipients=[email])
-            msg.body = f"Your password is: {USERS[email]}"
-            mail.send(msg)
-            return render_template('forgot_password.html', success_email=email)
-        return render_template('forgot_password.html', error="Email not found.")
-    return render_template('forgot_password.html')
 
 @app.route('/logout')
 def logout():
