@@ -4,6 +4,12 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from collections import Counter
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
+import google.generativeai as genai
+from flask import jsonify, request
+
+# Configure Gemini
+genai.configure(api_key="AIzaSyA1V1ZaFCHx8vRY2Wb2ik_bNHgoCITiVR0")
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 app = Flask(__name__)
 app.secret_key = 'cinemapulse_2026_key'
@@ -288,6 +294,18 @@ def submit_feedback():
     
     flash("Pulse recorded! Thank you for sharing your vibe.")
     return redirect(url_for('dashboard'))
+
+
+    @app.route('/chat', methods=['POST'])
+def chat():
+    user_message = request.json.get('message')
+    
+    # System prompt to define your chatbot's personality
+    prompt = f"You are the CinemaPulse AI assistant. Help users find movies based on 'vibes' like Mind-Blowing, Heartwarming, or Tear-Jerker. Keep it cinematic and helpful. User asks: {user_message}"
+    
+    response = model.generate_content(prompt)
+    return jsonify({"reply": response.text})
+    
 @app.route('/logout')
 def logout():
     session.pop('user_email', None)
