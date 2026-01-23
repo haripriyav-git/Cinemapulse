@@ -1,15 +1,23 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from collections import Counter
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
-import google.generativeai as genai
-from flask import jsonify, request
+import os
+from dotenv import load_dotenv
+from google import genai
+from google.genai import types
+from google.genai import Client
 
-# Configure Gemini
-genai.configure(api_key="AIzaSyA1V1ZaFCHx8vRY2Wb2ik_bNHgoCITiVR0")
-model = genai.GenerativeModel('gemini-1.5-flash')
+# This line reads the .env file and makes the variables available to Python
+load_dotenv()
+
+client = Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+# Initialize the model
+# Use the latest stable workhorse model
+model = genai.GenerativeModel('gemini-2.0-flash')
 
 app = Flask(__name__)
 app.secret_key = 'cinemapulse_2026_key'
@@ -294,22 +302,35 @@ def submit_feedback():
     
     flash("Pulse recorded! Thank you for sharing your vibe.")
     return redirect(url_for('dashboard'))
-
-
-    @app.route('/chat', methods=['POST'])
+@app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.json.get('message')
     
-    # System prompt to define your chatbot's personality
-    prompt = f"You are the CinemaPulse AI assistant. Help users find movies based on 'vibes' like Mind-Blowing, Heartwarming, or Tear-Jerker. Keep it cinematic and helpful. User asks: {user_message}"
-    
-    response = model.generate_content(prompt)
-    return jsonify({"reply": response.text})
-    
+    try:
+        # 3. Use the client object to generate content
+        response = client.models.generate_content(
+            model='gemini-2.0-flash', 
+            contents=user_message
+        )
+
+        return jsonify({"reply": response.text})
+    except Exception as e:
+        # This will catch your 429 error and show a friendly message
+        if "429" in str(e):
+            return jsonify({"reply": "I'm a bit tired from all the movie talk! Please try again in a few minutes."})
+        return jsonify({"reply": "My cinematic sensors are down. Please try again later!"})
+
 @app.route('/logout')
 def logout():
     session.pop('user_email', None)
     return redirect(url_for('index'))
+
+try:
+    response = model.generate_content("Hello! Are you ready for CinemaPulse?")
+    print("SUCCESS: Gemini is connected!")
+    print(f"Response: {response.text}")
+except Exception as e:
+    print(f"ERROR: Could not connect. Check your API key. Details: {e}")
 
 if __name__ == '__main__':
     app.run(debug=True)
