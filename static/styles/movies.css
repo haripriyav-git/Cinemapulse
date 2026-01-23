@@ -68,7 +68,6 @@ body {
 
 .legend-header h3 { margin: 0 0 10px 0; font-size: 1.4rem; }
 .legend-header h3 span { color: var(--primary-red); }
-
 .legend-header p { 
     margin: 0 0 25px 0; 
     color: var(--text-muted); 
@@ -89,7 +88,6 @@ body {
 }
 
 .legend-content { display: flex; flex-direction: column; }
-
 .legend-content strong {
     color: #fff;
     font-size: 0.95rem;
@@ -102,7 +100,7 @@ body {
     margin-top: 2px;
 }
 
-/* --- 4. UNIQUE: Mood Discovery Filter --- */
+/* --- 4. Mood Discovery Filter --- */
 .mood-discovery {
     margin: 0 auto 40px;
     padding: 25px;
@@ -253,9 +251,10 @@ body {
     border: 1px solid #333;
 }
 
-.vibe-segment {
-    height: 100%;
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+.vibe-segment { 
+    height: 100%; 
+    transition: width 0.5s ease; 
+    width: var(--width, 0%); 
 }
 
 /* --- 7. Color Palette & Status Dots --- */
@@ -266,7 +265,7 @@ body {
     flex-shrink: 0;
 }
 
-/* Collective Vibe Styles (Shared by Legend, Meter, and Filter) */
+/* Consolidated Vibe Colors */
 .mind-blowing, .vibe-Mind-Blowing { background-color: var(--primary-red); box-shadow: 0 0 10px rgba(229, 9, 20, 0.4); }
 .heartwarming, .vibe-Heartwarming { background-color: #ff69b4; }
 .tear-jerker, .vibe-Tear-Jerker { background-color: #3498db; }
@@ -295,6 +294,24 @@ body {
 }
 
 .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
+#modalBody {
+    display: block !important;       /* Overrides the -webkit-box from the grid */
+    -webkit-line-clamp: unset !important; /* Removes the 2-line limit */
+    line-clamp: unset !important;    /* Standard property for compatibility */
+    max-height: 400px;               /* Keeps the modal from growing off-screen */
+    overflow-y: auto;                /* Adds a scrollbar if the text is very long */
+    padding-right: 10px;             /* Space for the scrollbar */
+    white-space: pre-wrap;           /* Preserves line breaks from your database */
+}
+
+/* Optional: Make the scrollbar look professional */
+#modalBody::-webkit-scrollbar {
+    width: 6px;
+}
+#modalBody::-webkit-scrollbar-thumb {
+    background: var(--primary-red);
+    border-radius: 10px;
+}
 
 .close-btn { 
     background: #444; 
@@ -304,29 +321,60 @@ body {
     border-radius: 5px; 
     cursor: pointer; 
 }
-/* Styling for new badges and description */
+
+/* --- 9. Badge & Description Styles --- */
 .movie-badges {
     display: flex;
     gap: 8px;
     margin: 8px 0;
 }
+
 .badge {
     font-size: 0.65rem;
     padding: 2px 8px;
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.1);
-    color: var(--accent-red);
+    color: var(--text-main);
     border: 1px solid rgba(229, 9, 20, 0.3);
     text-transform: uppercase;
 }
-.movie-desc-short {
-    font-size: 0.75rem;
-    color: #888;
-    line-height: 1.4;
-    margin: 10px 0;
+
+.movie-desc-short { 
+    font-size: 0.75rem; 
+    color: #888; 
+    margin: 10px 0 5px 0; 
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    line-clamp: 2;
     -webkit-box-orient: vertical;
+    line-clamp: 2;
     overflow: hidden;
+    text-overflow: ellipsis; 
+    line-height: 1.4;
 }
+
+.read-more-link { 
+    font-size: 0.7rem; 
+    color: var(--primary-red); 
+    cursor: pointer; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+    display: inline-block;
+    margin-bottom: 10px;
+}
+.read-more-link:hover { text-decoration: underline; }
+
+.desc-modal-content { 
+    border-left: 5px solid var(--primary-red); 
+    max-width: 500px;
+}
+/* Activate the pulse colors */
+.vibe-segment { height: 100%; transition: width 0.5s ease; }
+
+/* Filter Bar Styling */
+.mood-discovery { margin-bottom: 40px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid #222; }
+.mood-options { display: flex; gap: 10px; flex-wrap: wrap; }
+.mood-btn { 
+    background: #222; border: 1px solid #444; color: #fff; padding: 8px 18px; 
+    border-radius: 30px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; 
+}
+.mood-btn.active { background: var(--accent-red); border-color: var(--accent-red); }

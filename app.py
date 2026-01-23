@@ -264,27 +264,30 @@ def dashboard():
                            feedbacks=all_feedbacks, 
                            movie_stats=movie_stats) 
 
-@app.route('/submit-feedback', methods=['POST'])
+@app.route('/submit_feedback', methods=['POST']) # Changed hyphen to underscore
 def submit_feedback():
     if 'user_email' not in session:
         return redirect(url_for('login'))
     
+    # This correctly identifies you as HARIPRIYA V based on your account
     user_display_name = session['user_email'].split('@')[0].capitalize()
+
+    # Ensure the rating exists before converting to int to avoid errors
+    rating_val = request.form.get('rating', 10) 
 
     new_entry = Feedback(
         user_name=user_display_name,
         user_email=session['user_email'],
         movie_title=request.form.get('movie_title'),
-        rating=int(request.form.get('rating')),
+        rating=int(rating_val),
         vibe=request.form.get('vibe'),
         comment=request.form.get('comment')
     )
     db.session.add(new_entry)
     db.session.commit()
     
-    flash(f'Pulse recorded by {user_display_name}!', 'success')
+    flash("Pulse recorded! Thank you for sharing your vibe.")
     return redirect(url_for('dashboard'))
-
 @app.route('/logout')
 def logout():
     session.pop('user_email', None)
