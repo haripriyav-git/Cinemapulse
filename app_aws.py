@@ -182,11 +182,10 @@ def signup():
     email = request.form.get('email')
     password = request.form.get('password')
     
-    # Check if user exists
     if users_table.get_item(Key={'email': email}).get('Item'):
         return render_template('login.html', error="Account already exists.")
     
-    # Save to DynamoDB
+   
     users_table.put_item(Item={'email': email, 'password': password})
     session['user_email'] = email
     return redirect(url_for('dashboard'))
