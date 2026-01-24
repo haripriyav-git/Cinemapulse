@@ -9,14 +9,14 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignat
 app = Flask(__name__)
 app.secret_key = 'cinemapulse_2026_key'
 
-# --- Configuration ---
+
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'hpriyasvraman@gmail.com'
 app.config['MAIL_PASSWORD'] = 'xrfhlytheljtzpvx'  
 app.config['MAIL_DEFAULT_SENDER'] = 'hpriyasvraman@gmail.com'
-# Salt for token security
+
 app.config['SECURITY_PASSWORD_SALT'] = 'cinema-pulse-salt-secure'
 
 mail = Mail(app)
@@ -25,7 +25,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cinema.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# --- Database Model ---
+
 class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(100), nullable=False)
@@ -39,7 +39,7 @@ class Feedback(db.Model):
 with app.app_context():
     db.create_all()
 
-# --- Temporary User Store ---
+
 USERS = {"admin@cinema.com": "pulse123"}
 
 MOVIES_DATA = [
@@ -165,7 +165,7 @@ MOVIES_DATA = [
     }
 ]
 
-# --- Token Helpers ---
+
 def generate_token(email):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     return serializer.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
@@ -265,15 +265,15 @@ def dashboard():
                            feedbacks=all_feedbacks, 
                            movie_stats=movie_stats) 
 
-@app.route('/submit_feedback', methods=['POST']) # Changed hyphen to underscore
+@app.route('/submit_feedback', methods=['POST']) 
 def submit_feedback():
     if 'user_email' not in session:
         return redirect(url_for('login'))
     
-    # This correctly identifies you as HARIPRIYA V based on your account
+   
     user_display_name = session['user_email'].split('@')[0].capitalize()
 
-    # Ensure the rating exists before converting to int to avoid errors
+    
     rating_val = request.form.get('rating', 10) 
 
     new_entry = Feedback(

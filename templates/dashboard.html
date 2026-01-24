@@ -19,7 +19,7 @@
         .main-content { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
         .section-header { border-left: 4px solid var(--accent-red); padding-left: 15px; margin-bottom: 30px; }
 
-        /* Vibe Legend Styling */
+        
         .vibe-legend-card {
             background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid #333;
             margin-bottom: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
@@ -30,7 +30,7 @@
         .legend-content strong { font-size: 0.95rem; color: #fff; }
         .vibe-desc { font-size: 0.8rem; color: var(--text-gray); }
 
-        /* UNIQUE: Mood Discovery Bar */
+      
         .mood-discovery { margin-bottom: 40px; padding: 25px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid #222; }
         .vibe-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-red); font-weight: bold; display: block; margin-bottom: 15px; }
         .mood-options { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -62,7 +62,7 @@
 
         .read-more-link { color: var(--accent-red); cursor: pointer; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
 
-        /* Vibe Colors */
+       
         .dot { height: 12px; width: 12px; border-radius: 50%; flex-shrink: 0; }
         .mind-blowing, .vibe-Mind-Blowing { background: #e50914; }
         .heartwarming, .vibe-Heartwarming { background: #ff69b4; }
@@ -74,12 +74,12 @@
         .vibe-meter-container { background: #333; height: 8px; width: 100%; border-radius: 4px; margin-top: 10px; overflow: hidden; display: flex; }
         .vibe-segment { height: 100%; transition: width 0.5s ease; width: var(--width, 0%); }
 
-        /* Live Feed Styles */
+        
         .feedback-feed { margin-top: 60px; background: #111; padding: 25px; border-radius: 12px; border: 1px solid #222; }
         .feed-item { border-bottom: 1px solid #222; padding: 15px 0; }
         .vibe-tag { color: var(--accent-red); font-weight: bold; background: rgba(229, 9, 20, 0.1); padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 5px; }
 
-        /* Modals */
+        
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); }
         .modal-content { background: var(--card-bg); margin: 8% auto; padding: 30px; width: 90%; max-width: 500px; border-radius: 12px; border: 1px solid #333; }
         .close-btn { background: #444; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; margin-top: 15px; width: 100%; }
@@ -289,7 +289,7 @@
             document.getElementById('feedbackModal').style.display = 'none';
         }
 
-        /* Filter Logic */
+       
         function filterVibe(vibe, btn) {
             document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
@@ -304,14 +304,14 @@
             });
         }
 
-        /* Modal Background Close */
+        
         window.onclick = function(event) {
             if (event.target.className === 'modal') {
                 event.target.style.display = "none";
             }
         }
 
-        /* Back to Top Logic */
+ 
         let mybutton = document.getElementById("backToTop");
 
         window.onscroll = function() {
@@ -328,7 +328,7 @@
             };
         }
 
-        /* Global Mood Calculation */
+        
         document.addEventListener('DOMContentLoaded', function() {
             const vibeTags = document.querySelectorAll('.feed-item .vibe-tag');
             let vibes = [];

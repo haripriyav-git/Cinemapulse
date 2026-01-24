@@ -16,8 +16,7 @@ sns = boto3.client('sns', region_name=region)
 
 feedback_table = dynamodb.Table('CinemaFeedback')
 users_table = dynamodb.Table('CinemaUsers')
-SNS_TOPIC_ARN = os.environ.get('SNS_TOPIC_ARN') # Store in Environment Variable
-
+SNS_TOPIC_ARN = os.environ.get('SNS_TOPIC_ARN') 
 
 SECURITY_PASSWORD_SALT = 'cinema-pulse-salt-secure'
 
@@ -150,6 +149,17 @@ def generate_token(email):
     return serializer.dumps(email, salt=SECURITY_PASSWORD_SALT)
 
 # --- Routes ---
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/support')
+def support():
+    return render_template('support.html')
 
 @application.route('/login', methods=['GET', 'POST'])
 def login():
@@ -218,7 +228,73 @@ def submit_feedback():
     flash("Pulse recorded!")
     return redirect(url_for('dashboard'))
 
-# (Rest of the routes follow the same pattern...)
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_with_token(token):
+    email = confirm_token(token)
+    if not email:
+        return "The reset link is invalid or has expired.", 400
+
+    if request.method == 'POST':
+        new_password = request.form.get('password')
+        USERS[email] = new_password
+        flash('Password successfully updated!', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('reset_new_password.html', token=token)
+
+@app.route('/dashboard')
+def dashboard():
+    if 'user_email' not in session:
+        return redirect(url_for('login'))
+    
+    all_feedbacks = Feedback.query.all()
+    movie_stats = {}
+    
+    for movie in MOVIES_DATA:
+        vibe_list = [f.vibe for f in all_feedbacks if f.movie_title == movie['title']]
+        total = len(vibe_list)
+        if total > 0:
+            counts = Counter(vibe_list)
+            movie_stats[movie['title']] = {vibe: (count / total) * 100 for vibe, count in counts.items()}
+        else:
+            movie_stats[movie['title']] = {}
+
+    return render_template('dashboard.html', 
+                           movies=MOVIES_DATA, 
+                           feedbacks=all_feedbacks, 
+                           movie_stats=movie_stats) 
+
+@app.route('/submit_feedback', methods=['POST']) 
+def submit_feedback():
+    if 'user_email' not in session:
+        return redirect(url_for('login'))
+    
+    
+    user_display_name = session['user_email'].split('@')[0].capitalize()
+
+    
+    rating_val = request.form.get('rating', 10) 
+
+    new_entry = Feedback(
+        user_name=user_display_name,
+        user_email=session['user_email'],
+        movie_title=request.form.get('movie_title'),
+        rating=int(rating_val),
+        vibe=request.form.get('vibe'),
+        comment=request.form.get('comment')
+    )
+    db.session.add(new_entry)
+    db.session.commit()
+    
+    flash("Pulse recorded! Thank you for sharing your vibe.")
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/logout')
+def logout():
+    session.pop('user_email', None)
+    return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     application.run(host='0.0.0.0', port=8080)

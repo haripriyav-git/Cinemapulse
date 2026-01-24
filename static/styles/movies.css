@@ -370,7 +370,7 @@ body {
 /* Activate the pulse colors */
 .vibe-segment { height: 100%; transition: width 0.5s ease; }
 
-/* Filter Bar Styling */
+
 .mood-discovery { margin-bottom: 40px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid #222; }
 .mood-options { display: flex; gap: 10px; flex-wrap: wrap; }
 .mood-btn { 
@@ -415,21 +415,21 @@ body {
 
 .stat-label { font-size: 0.7rem; color: #888; text-transform: uppercase; display: block; margin-bottom: 5px; }
 .stat-value { font-size: 1.1rem; font-weight: bold; color: #fff; }
-/* Custom Scrollbar for the Community Feed */
+
 .community-feed-container::-webkit-scrollbar {
-    width: 6px; /* Makes it thin */
+    width: 6px; 
 }
 
 .community-feed-container::-webkit-scrollbar-track {
-    background: #111; /* Matches your background */
+    background: #111; 
     border-radius: 10px;
 }
 
 .community-feed-container::-webkit-scrollbar-thumb {
-    background: var(--accent-red); /* Your signature red color */
+    background: var(--accent-red); 
     border-radius: 10px;
 }
 
 .community-feed-container::-webkit-scrollbar-thumb:hover {
-    background: #ff0f1a; /* Slightly brighter red on hover */
+    background: #ff0f1a; 
 }
