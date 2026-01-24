@@ -177,7 +177,7 @@
                     </div>
 
                     <p class="movie-desc-short">{{ movie.desc }}</p>
-                    <span class="read-more-link" onclick="openDescModal('{{ movie.title }}', '{{ movie.desc }}')">Read More</span>
+                    <span class="read-more-link" data-title="{{ movie.title }}" data-desc="{{ movie.desc }}" onclick="openDescModalFromData(this)">Read More</span>
 
                     <div style="font-size: 0.65rem; color: var(--text-gray); margin-top: 12px; text-transform: uppercase;">Community Pulse</div>
                     <div class="vibe-meter-container">
@@ -195,31 +195,36 @@
             </div>
             {% endfor %}
         </div>
-       
+        
 
         <div class="feedback-feed">
             <h3 style="border-bottom: 1px solid var(--accent-red); padding-bottom: 10px; margin-bottom: 20px;">Live Community Feed</h3>
-            {% if feedbacks %}
-                {% for entry in feedbacks|reverse %}
-                <div class="feed-item">
-                    <strong>{{ entry.user_name }}</strong> felt 
-                    <span class="vibe-tag">
-                        {{ entry.vibe }}
-                        {% if entry.vibe == 'Mind-Blowing' %} 🤯
-                        {% elif entry.vibe == 'Heartwarming' %} ❤️
-                        {% elif entry.vibe == 'Tear-Jerker' %} 😢
-                        {% elif entry.vibe == 'Edge-of-Seat' %} ⚡
-                        {% elif entry.vibe == 'Pure-Joy' %} 😊
-                        {% elif entry.vibe == 'Thought-Provoking' %} 🤔
-                        {% endif %}
-                    </span> about 
-                    <em>{{ entry.movie_title }}</em>
-                    <p style="color: var(--text-gray); margin: 8px 0 0 0; font-size: 0.9rem;">"{{ entry.comment }}"</p>
-                </div>
-                {% endfor %}
-            {% else %}
-                <p style="color: var(--text-gray);">No pulses recorded yet.</p>
-            {% endif %}
+            
+            <div class="community-feed-container" style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
+                {% if feedbacks %}
+                    {% for entry in feedbacks|reverse %}
+                    <div class="feed-item">
+                        <small>
+                            <strong>{{ entry.user_name }}</strong> felt 
+                            <span class="vibe-tag">
+                                {{ entry.vibe }}
+                                {% if entry.vibe == 'Mind-Blowing' %} 🤯
+                                {% elif entry.vibe == 'Heartwarming' %} ❤️
+                                {% elif entry.vibe == 'Tear-Jerker' %} 😢
+                                {% elif entry.vibe == 'Edge-of-Seat' %} ⚡
+                                {% elif entry.vibe == 'Pure-Joy' %} 😊
+                                {% elif entry.vibe == 'Thought-Provoking' %} 🤔
+                                {% endif %}
+                            </span> about 
+                            <em>{{ entry.movie_title }}</em>
+                        </small>
+                        <p style="color: var(--text-gray); margin: 5px 0 0 0; font-size: 0.85rem;">"{{ entry.comment|truncate(80) }}"</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="color: var(--text-gray);">No pulses recorded yet.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 
@@ -256,11 +261,18 @@
         </div>
     </div>
 
-    <script>
+   <script>
+        /* Existing Modal Functions */
         function openDescModal(title, desc) {
             document.getElementById('descModalTitle').innerText = title;
             document.getElementById('descModalText').innerText = desc;
             document.getElementById('descModal').style.display = 'block';
+        }
+
+        function openDescModalFromData(element) {
+            const title = element.getAttribute('data-title');
+            const desc = element.getAttribute('data-desc');
+            openDescModal(title, desc);
         }
 
         function closeDescModal() {
@@ -277,6 +289,7 @@
             document.getElementById('feedbackModal').style.display = 'none';
         }
 
+        /* Filter Logic */
         function filterVibe(vibe, btn) {
             document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
@@ -291,32 +304,51 @@
             });
         }
 
+        /* Modal Background Close */
         window.onclick = function(event) {
             if (event.target.className === 'modal') {
                 event.target.style.display = "none";
             }
         }
-        const chatToggle = document.getElementById('chat-toggle');
+
+        /* Back to Top Logic */
+        let mybutton = document.getElementById("backToTop");
+
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                if(mybutton) mybutton.style.display = "block";
+            } else {
+                if(mybutton) mybutton.style.display = "none";
+            }
+        };
+
+        if(mybutton) {
+            mybutton.onclick = function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+        }
+
+        /* Global Mood Calculation */
         document.addEventListener('DOMContentLoaded', function() {
-    const vibeTags = document.querySelectorAll('.feed-item .vibe-tag');
-    let vibes = [];
-    
-    vibeTags.forEach(tag => {
-        // Remove emojis and trim spaces to get clean vibe name
-        vibes.push(tag.innerText.split(' ')[0].trim());
-    });
+            const vibeTags = document.querySelectorAll('.feed-item .vibe-tag');
+            let vibes = [];
+            
+            vibeTags.forEach(tag => {
+                vibes.push(tag.innerText.split(' ')[0].trim());
+            });
 
-    if (vibes.length > 0) {
-        const mostCommon = vibes.sort((a,b) =>
-            vibes.filter(v => v===a).length - vibes.filter(v => v===b).length
-        ).pop();
-        
-        document.getElementById('top-vibe').innerText = mostCommon;
-    } else {
-        document.getElementById('top-vibe').innerText = "Quiet Today";
-    }
-});
-
+            if (vibes.length > 0) {
+                const mostCommon = vibes.sort((a,b) =>
+                    vibes.filter(v => v===a).length - vibes.filter(v => v===b).length
+                ).pop();
+                
+                document.getElementById('top-vibe').innerText = mostCommon;
+            } else {
+                const topVibeElem = document.getElementById('top-vibe');
+                if(topVibeElem) topVibeElem.innerText = "Quiet Today";
+            }
+        });
     </script>
-</body>
+
+    </body>
 </html>

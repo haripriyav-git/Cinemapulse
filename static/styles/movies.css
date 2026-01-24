@@ -415,3 +415,21 @@ body {
 
 .stat-label { font-size: 0.7rem; color: #888; text-transform: uppercase; display: block; margin-bottom: 5px; }
 .stat-value { font-size: 1.1rem; font-weight: bold; color: #fff; }
+/* Custom Scrollbar for the Community Feed */
+.community-feed-container::-webkit-scrollbar {
+    width: 6px; /* Makes it thin */
+}
+
+.community-feed-container::-webkit-scrollbar-track {
+    background: #111; /* Matches your background */
+    border-radius: 10px;
+}
+
+.community-feed-container::-webkit-scrollbar-thumb {
+    background: var(--accent-red); /* Your signature red color */
+    border-radius: 10px;
+}
+
+.community-feed-container::-webkit-scrollbar-thumb:hover {
+    background: #ff0f1a; /* Slightly brighter red on hover */
+}
