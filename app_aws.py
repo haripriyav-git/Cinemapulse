@@ -2,9 +2,9 @@ import os
 import boto3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from datetime import datetime
-from collections import Counter
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
+from itsdangerous import URLSafeTimedSerializer
 from boto3.dynamodb.conditions import Key
+from botocore.exceptions import ClientError
 
 application = Flask(__name__)
 # Best practice: use environment variables for keys
@@ -21,6 +21,19 @@ users_table = dynamodb.Table('CinemaUsers')
 SNS_TOPIC_ARN = os.environ.get('SNS_TOPIC_ARN') 
 
 SECURITY_PASSWORD_SALT = 'cinema-pulse-salt-secure'
+
+# --- Token Helpers ---
+def generate_token(email):
+    serializer = URLSafeTimedSerializer(application.secret_key)
+    return serializer.dumps(email, salt=SECURITY_PASSWORD_SALT)
+
+def confirm_token(token, expiration=1800):
+    serializer = URLSafeTimedSerializer(application.secret_key)
+    try:
+        email = serializer.loads(token, salt=SECURITY_PASSWORD_SALT, max_age=expiration)
+    except:
+        return False
+    return email
 
 MOVIES_DATA = [
     {
@@ -144,29 +157,16 @@ MOVIES_DATA = [
         "img": "https://m.media-amazon.com/images/M/MV5BNjYzNDM0MzktMzU5NC00YjAxLWEwZDItYjg3ODUxMDk5MjJmXkEyXkFqcGc@._V1_.jpg"
     }
 ]
-
-def generate_token(email):
-    serializer = URLSafeTimedSerializer(application.secret_key)
-    return serializer.dumps(email, salt=SECURITY_PASSWORD_SALT)
-
-def confirm_token(token, expiration=1800):
-    serializer = URLSafeTimedSerializer(application.secret_key)
-    try:
-        email = serializer.loads(token, salt=SECURITY_PASSWORD_SALT, max_age=expiration)
-    except:
-        return False
-    return email
-
 # --- Routes ---
-@app.route('/')
+@application.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/about')
+@application.route('/about')
 def about():
     return render_template('about.html')
 
-@app.route('/support')
+@application.route('/support')
 def support():
     return render_template('support.html')
 
@@ -194,7 +194,6 @@ def signup():
     if users_table.get_item(Key={'email': email}).get('Item'):
         return render_template('login.html', error="Account already exists.")
     
-   
     users_table.put_item(Item={'email': email, 'password': password})
     session['user_email'] = email
     return redirect(url_for('dashboard'))
@@ -209,13 +208,33 @@ def forgot_password():
             token = generate_token(email)
             reset_url = url_for('reset_with_token', token=token, _external=True)
             
-            sns.publish(
-                TopicArn=SNS_TOPIC_ARN,
-                Message=f"Reset link: {reset_url}",
-                Subject="CinemaPulse Password Reset"
-            )
+            if SNS_TOPIC_ARN:
+                sns.publish(
+                    TopicArn=SNS_TOPIC_ARN,
+                    Message=f"Reset link: {reset_url}",
+                    Subject="CinemaPulse Password Reset"
+                )
             return render_template('forgot_password.html', success_email=email)
     return render_template('forgot_password.html')
+
+@application.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_with_token(token):
+    email = confirm_token(token)
+    if not email:
+        return "The reset link is invalid or has expired.", 400
+
+    if request.method == 'POST':
+        new_password = request.form.get('password')
+        # Update password in DynamoDB
+        users_table.update_item(
+            Key={'email': email},
+            UpdateExpression="set password = :p",
+            ExpressionAttributeValues={':p': new_password}
+        )
+        flash('Password successfully updated!', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('reset_new_password.html', token=token)
 
 @application.route('/submit_feedback', methods=['POST'])
 def submit_feedback():
@@ -236,38 +255,6 @@ def submit_feedback():
     flash("Pulse recorded!")
     return redirect(url_for('dashboard'))
 
-@app.route('/reset-password/<token>', methods=['GET', 'POST'])
-def reset_with_token(token):
-    email = confirm_token(token)
-    if not email:
-        return "The reset link is invalid or has expired.", 400
-
-    if request.method == 'POST':
-        new_password = request.form.get('password')
-        USERS[email] = new_password
-        flash('Password successfully updated!', 'success')
-        return redirect(url_for('login'))
-
-    return render_template('reset_new_password.html', token=token)
-
-    @application.route('/submit_feedback', methods=['POST'])
-def submit_feedback():
-    if 'user_email' not in session:
-        return redirect(url_for('login'))
-    
-    feedback_id = str(datetime.utcnow().timestamp())
-    feedback_table.put_item(Item={
-        'id': feedback_id,
-        'user_email': session['user_email'],
-        'movie_title': request.form.get('movie_title'),
-        'rating': int(request.form.get('rating', 10)),
-        'vibe': request.form.get('vibe'),
-        'comment': request.form.get('comment'),
-        'date_posted': datetime.utcnow().isoformat()
-    })
-    flash("Pulse recorded!")
-    return redirect(url_for('dashboard'))
-
 @application.route('/logout')
 def logout():
     session.pop('user_email', None)
@@ -275,4 +262,3 @@ def logout():
 
 if __name__ == '__main__':
     application.run(host='0.0.0.0', port=5000)
-
