@@ -6,6 +6,14 @@
     --text-main: #ffffff;
     --text-muted: #aaaaaa;
     --accent-gold: #f5c518;
+    
+    /* Vibe Colors */
+    --mind-blowing: #e50914;
+    --heartwarming: #ff69b4;
+    --tear-jerker: #3498db;
+    --edge-seat: #f1c40f;
+    --pure-joy: #2ecc71;
+    --thought-provoking: #9b59b6;
 }
 
 body {
@@ -17,7 +25,51 @@ body {
     overflow-x: hidden;
 }
 
-/* --- 2. Navigation & Hero Section --- */
+/* --- 2. Auth & Login Page Styles --- */
+.login-body { 
+    background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), 
+                url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+}
+
+.auth-card { 
+    background: rgba(26, 26, 26, 0.95); 
+    padding: 40px; 
+    border-radius: 12px; 
+    width: 380px; 
+    border-top: 4px solid var(--primary-red); 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+    backdrop-filter: blur(8px);
+}
+
+.auth-card h2 { text-align: center; margin-bottom: 30px; }
+.auth-card h2 span { color: var(--primary-red); }
+
+.tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #666; transition: 0.3s; }
+.tab.active { color: white; border-bottom: 2px solid var(--primary-red); font-weight: bold; }
+
+.form-section { display: none; }
+.form-section.active { display: block; }
+
+input { 
+    width: 100%; padding: 12px; margin: 10px 0; background: #222; 
+    border: 1px solid #333; color: white; border-radius: 5px; box-sizing: border-box; 
+}
+
+.btn, .submit-btn { 
+    width: 100%; padding: 12px; background: var(--primary-red); border: none; 
+    color: white; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.3s;
+}
+.btn:hover { opacity: 0.9; transform: scale(1.02); }
+
+/* --- 3. Navigation & Hero --- */
 .navbar {
     display: flex; 
     justify-content: space-between; 
@@ -25,498 +77,73 @@ body {
     padding: 1.2rem 5rem; 
     background: rgba(0, 0, 0, 0.95);
     border-bottom: 2px solid var(--primary-red); 
-    position: sticky; 
-    top: 0; 
-    z-index: 1000;
+    position: sticky; top: 0; z-index: 1000;
 }
 
 .logo { font-size: 1.6rem; font-weight: 700; text-transform: uppercase; }
 .logo span { color: var(--primary-red); }
 
-.nav-links a { 
-    color: var(--text-muted); 
-    text-decoration: none; 
-    margin-left: 20px; 
-    transition: 0.3s; 
-}
+.nav-links a { color: var(--text-muted); text-decoration: none; margin-left: 20px; transition: 0.3s; }
 .nav-links a:hover { color: var(--primary-red); }
 
 .hero-gateway {
     height: 90vh; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
     text-align: center; 
     background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), 
     url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070') center/cover;
 }
 
-.hero-gateway h1 { font-size: 4.5rem; margin: 0; }
-.hero-gateway h1 span { color: var(--primary-red); }
 
-/* --- 3. Professional Vibe Legend Card --- */
-.vibe-legend-card {
-    background: var(--card-bg);
-    padding: 30px;
-    border-radius: 12px;
-    border: 1px solid #333;
-    margin: 40px auto;
-    max-width: 1200px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+.pulse-container:hover { border-color: var(--primary-red); box-shadow: 0 0 20px rgba(229, 9, 20, 0.2); }
+
+.pulse-header { padding: 25px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+
+#current-vibe { transition: all 0.4s ease; display: inline-block; min-width: 120px; text-align: center; }
+
+.vibe-tag-display { 
+    background: rgba(229, 9, 20, 0.1); color: var(--primary-red); 
+    padding: 6px 16px; border-radius: 20px; font-weight: bold; 
+    font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; 
 }
 
-.legend-header h3 { margin: 0 0 10px 0; font-size: 1.4rem; }
-.legend-header h3 span { color: var(--primary-red); }
-.legend-header p { 
-    margin: 0 0 25px 0; 
-    color: var(--text-muted); 
-    font-size: 0.95rem; 
-    max-width: 800px;
-}
 
-.legend-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px 30px;
-}
 
-.legend-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-}
 
-.legend-content { display: flex; flex-direction: column; }
-.legend-content strong {
-    color: #fff;
-    font-size: 0.95rem;
-    letter-spacing: 0.5px;
-}
+.placeholder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; padding: 40px; max-width: 1300px; margin: 0 auto; }
 
-.vibe-desc {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin-top: 2px;
-}
-
-/* --- 4. Mood Discovery Filter --- */
-.mood-discovery {
-    margin: 0 auto 40px;
-    padding: 25px;
-    max-width: 1200px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 12px;
-    border: 1px solid #222;
-}
-
-.vibe-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--primary-red);
-    font-weight: bold;
-    display: block;
-    margin-bottom: 15px;
-}
-
-.mood-options {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.mood-btn {
-    background: #222;
-    border: 1px solid #444;
-    color: #fff;
-    padding: 10px 22px;
-    border-radius: 30px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.85rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.mood-btn:hover {
-    border-color: var(--primary-red);
-    background: #2a2a2a;
-    transform: translateY(-2px);
-}
-
-.mood-btn.active {
-    background: var(--primary-red);
-    border-color: var(--primary-red);
-    box-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
-}
-
-.mood-btn.reset {
-    color: #fff;
-    border: 1px dashed #555;
-    background: transparent;
-}
-
-/* --- 5. Movie Grid & Card Styles --- */
-.placeholder-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 30px;
-    padding: 40px;
-    max-width: 1300px;
-    margin: 0 auto;
-}
-
-.movie-card {
-    background: transparent;
-    width: 100%;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
+.movie-card { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .movie-card:hover { transform: translateY(-10px); }
 
 .poster-box {
-    position: relative;
-    background: #333;
-    height: 350px;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 20px;
-    cursor: pointer;
-    overflow: hidden;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    position: relative; background: #333; height: 350px; border-radius: 15px;
+    display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
 }
 
-.bg-poster {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    opacity: 0.6;
-    z-index: 1;
-    transition: 0.3s ease;
-}
-
+.bg-poster { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.3s; }
 .movie-card:hover .bg-poster { opacity: 0.8; transform: scale(1.1); }
 
-.inner-title {
-    position: relative;
-    color: #ffffff;
-    font-size: 1rem;
-    font-weight: 600;
-    z-index: 2;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-}
+.rank-badge { position: absolute; top: 15px; left: 15px; background: var(--primary-red); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; z-index: 3; }
 
-.rank-badge {
-    position: absolute;
-    top: 15px; left: 15px;
-    background: var(--primary-red);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    z-index: 3;
-}
+/* --- 6. Legend & Vibe Components --- */
+.vibe-legend-card { background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid #333; margin: 40px auto; max-width: 1200px; }
 
-.movie-info { padding: 12px 5px; }
-.movie-info h3 { margin: 0; font-size: 1rem; color: white; }
-.details { color: var(--text-muted); font-size: 0.85rem; margin-top: 5px; }
-.details span { color: var(--accent-gold); }
+.dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
 
-/* --- 6. Vibe-O-Meter Components --- */
-.vibe-meter-section { margin-top: 12px; }
+.mind-blowing, .vibe-Mind-Blowing, .vibe-Mind-Blowing-active { background-color: var(--primary-red) !important; color: #fff; }
+.heartwarming, .vibe-Heartwarming, .vibe-Heartwarming-active { background-color: var(--heartwarming) !important; color: #fff; }
+.tear-jerker, .vibe-Tear-Jerker, .vibe-Tear-Jerker-active { background-color: var(--tear-jerker) !important; color: #fff; }
+.edge-seat, .vibe-Edge-of-Seat, .vibe-Edge-of-Seat-active { background-color: var(--edge-seat) !important; color: #fff; }
+.pure-joy, .vibe-Pure-Joy, .vibe-Pure-Joy-active { background-color: var(--pure-joy) !important; color: #fff; }
+.thought-provoking, .vibe-thought-provoking, .vibe-Thought-Provoking-active { background-color: var(--thought-provoking) !important; color: #fff; }
 
-.vibe-label-small {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 5px;
-    display: block;
-}
-
-.vibe-meter-container {
-    background: #222;
-    height: 8px;
-    width: 100%;
-    border-radius: 10px;
-    overflow: hidden;
-    display: flex;
-    border: 1px solid #333;
-}
-
-.vibe-segment { 
-    height: 100%; 
-    transition: width 0.5s ease; 
-    width: var(--width, 0%); 
-}
-
-/* --- 7. Color Palette & Status Dots --- */
-.dot {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    margin-top: 5px;
-    flex-shrink: 0;
-}
-
-/* Consolidated Vibe Colors */
-.mind-blowing, .vibe-Mind-Blowing { background-color: var(--primary-red); box-shadow: 0 0 10px rgba(229, 9, 20, 0.4); }
-.heartwarming, .vibe-Heartwarming { background-color: #ff69b4; }
-.tear-jerker, .vibe-Tear-Jerker { background-color: #3498db; }
-.edge-seat, .vibe-Edge-of-Seat { background-color: #f1c40f; }
-.pure-joy, .vibe-Pure-Joy { background-color: #2ecc71; }
-.thought-provoking, .vibe-thought-provoking { background-color: #9b59b6; }
+/* --- 7. Community Feed --- */
+.feedback-feed { margin-top: 60px; background: #111; padding: 25px; border-radius: 12px; border: 1px solid #222; }
+.community-feed-container { max-height: 400px; overflow-y: auto; padding-right: 10px; }
+.community-feed-container::-webkit-scrollbar { width: 6px; }
+.community-feed-container::-webkit-scrollbar-thumb { background: var(--primary-red); border-radius: 10px; }
 
 /* --- 8. Modals --- */
-.modal {
-    display: none; 
-    position: fixed; 
-    z-index: 2000; 
-    left: 0; top: 0;
-    width: 100%; height: 100%; 
-    background: rgba(0,0,0,0.9);
-}
-
-.modal-content {
-    background: #1a1a1a; 
-    margin: 10% auto; 
-    padding: 30px; 
-    width: 90%;
-    max-width: 400px; 
-    border-radius: 15px; 
-    border: 1px solid var(--primary-red);
-}
-
-.modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
-#modalBody {
-    display: block !important;       /* Overrides the -webkit-box from the grid */
-    -webkit-line-clamp: unset !important; /* Removes the 2-line limit */
-    line-clamp: unset !important;    /* Standard property for compatibility */
-    max-height: 400px;               /* Keeps the modal from growing off-screen */
-    overflow-y: auto;                /* Adds a scrollbar if the text is very long */
-    padding-right: 10px;             /* Space for the scrollbar */
-    white-space: pre-wrap;           /* Preserves line breaks from your database */
-}
-
-/* Optional: Make the scrollbar look professional */
-#modalBody::-webkit-scrollbar {
-    width: 6px;
-}
-#modalBody::-webkit-scrollbar-thumb {
-    background: var(--primary-red);
-    border-radius: 10px;
-}
-
-.close-btn { 
-    background: #444; 
-    color: white; 
-    border: none; 
-    padding: 10px 20px; 
-    border-radius: 5px; 
-    cursor: pointer; 
-}
-
-/* --- 9. Badge & Description Styles --- */
-.movie-badges {
-    display: flex;
-    gap: 8px;
-    margin: 8px 0;
-}
-
-.badge {
-    font-size: 0.65rem;
-    padding: 2px 8px;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-main);
-    border: 1px solid rgba(229, 9, 20, 0.3);
-    text-transform: uppercase;
-}
-
-.movie-desc-short { 
-    font-size: 0.75rem; 
-    color: #888; 
-    margin: 10px 0 5px 0; 
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    line-clamp: 2;
-    overflow: hidden;
-    text-overflow: ellipsis; 
-    line-height: 1.4;
-}
-
-.read-more-link { 
-    font-size: 0.7rem; 
-    color: var(--primary-red); 
-    cursor: pointer; 
-    font-weight: bold; 
-    text-transform: uppercase; 
-    display: inline-block;
-    margin-bottom: 10px;
-}
-.read-more-link:hover { text-decoration: underline; }
-
-.desc-modal-content { 
-    border-left: 5px solid var(--primary-red); 
-    max-width: 500px;
-}
-/* Activate the pulse colors */
-.vibe-segment { height: 100%; transition: width 0.5s ease; }
-
-
-.mood-discovery { margin-bottom: 40px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid #222; }
-.mood-options { display: flex; gap: 10px; flex-wrap: wrap; }
-.mood-btn { 
-    background: #222; border: 1px solid #444; color: #fff; padding: 8px 18px; 
-    border-radius: 30px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; 
-}
-.mood-btn.active { background: var(--accent-red); border-color: var(--accent-red); }
-/* Container for the Graph */
-.pulse-container {
-    background: #121212;
-    border-radius: 12px;
-    border: 1px solid #333;
-    margin-bottom: 40px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    transition: transform 0.3s ease;
-}
-
-/* Header with Movie Title and Vibe */
-.pulse-header {
-    padding: 25px;
-    border-bottom: 1px solid #222;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#current-movie {
-    transition: all 0.3s ease;
-}
-
-/* The Vibe Tag that changes color on hover */
-.vibe-tag-display {
-    background: rgba(229, 9, 20, 0.1);
-    color: var(--accent-red);
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-weight: bold;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: background-color 0.4s ease, color 0.4s ease;
-}
-
-/* Wrapper for the Canvas to ensure it's responsive */
-.chart-wrapper {
-    position: relative;
-    height: 350px;
-    padding: 20px;
-    background: #0d0d0d; /* Slightly darker than the header for depth */
-}
-
-/* Styling the "Top Vibe" indicator */
-#top-vibe {
-    font-family: 'Poppins', sans-serif;
-    text-shadow: 0 0 10px rgba(229, 9, 20, 0.4);
-}
-
-/* Animations for the hover effect */
-@keyframes pulseGlow {
-    0% { box-shadow: 0 0 5px rgba(229, 9, 20, 0.2); }
-    50% { box-shadow: 0 0 20px rgba(229, 9, 20, 0.5); }
-    100% { box-shadow: 0 0 5px rgba(229, 9, 20, 0.2); }
-}
-
-.pulse-container:hover {
-    border-color: var(--accent-red);
-}
-
-.stat-label { font-size: 0.7rem; color: #888; text-transform: uppercase; display: block; margin-bottom: 5px; }
-.stat-value { font-size: 1.1rem; font-weight: bold; color: #fff; }
-
-.community-feed-container::-webkit-scrollbar {
-    width: 6px; 
-}
-
-.community-feed-container::-webkit-scrollbar-track {
-    background: #111; 
-    border-radius: 10px;
-}
-
-.community-feed-container::-webkit-scrollbar-thumb {
-    background: var(--accent-red); 
-    border-radius: 10px;
-}
-
-.community-feed-container::-webkit-scrollbar-thumb:hover {
-    background: #ff0f1a; 
-}
-/* --- Audience Pulse Hover Enhancements --- */
-
-/* Ensures the header transitions smoothly between different vibes */
-#current-vibe {
-    transition: all 0.4s ease;
-    display: inline-block;
-    min-width: 120px;
-    text-align: center;
-}
-
-/* Specific Vibe Colors for the Pulse Tag */
-/* These are applied via JavaScript during the onHover event */
-.vibe-Mind-Blowing-active { color: #e50914 !important; background: rgba(229, 9, 20, 0.2) !important; }
-.vibe-Heartwarming-active { color: #ff69b4 !important; background: rgba(255, 105, 180, 0.2) !important; }
-.vibe-Tear-Jerker-active { color: #3498db !important; background: rgba(52, 152, 219, 0.2) !important; }
-.vibe-Edge-of-Seat-active { color: #f1c40f !important; background: rgba(241, 196, 15, 0.2) !important; }
-.vibe-Pure-Joy-active { color: #2ecc71 !important; background: rgba(46, 204, 113, 0.2) !important; }
-.vibe-Thought-Provoking-active { color: #9b59b6 !important; background: rgba(155, 89, 182, 0.2) !important; }
-
-/* Glowing Pulse Line Animation */
-.chart-wrapper canvas {
-    filter: drop-shadow(0px 0px 5px rgba(229, 9, 20, 0.3));
-}
-
-/* Hovering effect for the Pulse Card */
-.pulse-container:hover {
-    border-color: var(--primary-red);
-    box-shadow: 0 0 20px rgba(229, 9, 20, 0.2);
-}
-
-#current-movie {
-    color: #fff;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
-}
-.login-body {
-    /* Replace with your image path or a URL */
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
-                url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070');
-    
-    background-size: cover;      /* Scales the image to fill the screen */
-    background-position: center; /* Keeps the image centered */
-    background-attachment: fixed;/* Prevents the background from moving */
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-}
-
-
-.login-card {
-    background: rgba(26, 26, 26, 0.9); /* Semi-transparent card-bg */
-    padding: 40px;
-    border-radius: 12px;
-    border: 1px solid #333;
-    backdrop-filter: blur(10px);    /* Adds a modern frosted-glass effect */
-    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-    width: 100%;
-    max-width: 400px;
-}
+.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
+.modal-content { background: #1a1a1a; margin: 10% auto; padding: 30px; width: 90%; max-width: 400px; border-radius: 15px; border: 1px solid var(--primary-red); }
+#modalBody { white-space: pre-wrap; max-height: 400px; overflow-y: auto; }

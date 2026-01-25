@@ -97,25 +97,7 @@
     </div>
 
     <div class="main-content" style="padding-top: 0;">
-        <div class="pulse-container">
-            <div class="pulse-header">
-                <div>
-                    <h4 style="color: var(--text-gray); margin: 0; text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem;">Live Audience Pulse</h4>
-                    <h2 id="current-movie" style="margin: 5px 0; font-size: 1.8rem;">Overall Vibe</h2>
-                    <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
-                        <span id="current-vibe" class="vibe-tag-display">Awaiting Pulse...</span>
-                        <span id="current-rating" style="color: #ffdd57; font-weight: bold; font-size: 1.2rem;">--/10</span>
-                    </div>
-                </div>
-                <div style="text-align: right;">
-                    <span style="display: block; font-size: 0.7rem; color: #666; text-transform: uppercase;">Trending</span>
-                    <span id="top-vibe" style="color: var(--accent-red); font-weight: bold; font-size: 1.3rem;">Analyzing...</span>
-                </div>
-            </div>
-            <div style="height: 350px; padding: 20px; background: #0d0d0d;">
-                <canvas id="audiencePulseChart"></canvas>
-            </div>
-        </div>
+     
 
         {% with messages = get_flashed_messages() %}
           {% if messages %}
@@ -257,58 +239,118 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const vibeColorMap = {
-            'Mind-Blowing': '#e50914',
-            'Heartwarming': '#ff69b4',
-            'Tear-Jerker': '#3498db',
-            'Edge-of-Seat': '#f1c40f',
-            'Pure-Joy': '#2ecc71',
-            'Thought-Provoking': '#9b59b6'
-        };
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Initialize the Radar Chart
+            const ctx = document.getElementById('pulseRadarChart').getContext('2d');
+            
+            // Define your colors to match your existing legend
+            const vibeColors = {
+                'Mind-Blowing': '#e50914',
+                'Heartwarming': '#ff69b4',
+                'Tear-Jerker': '#3498db',
+                'Edge-of-Seat': '#f1c40f',
+                'Pure-Joy': '#2ecc71',
+                'Thought-Provoking': '#9b59b6'
+            };
 
-        async function initPulseChart() {
-            try {
-                const response = await fetch('/api/global-pulse');
-                const pulseData = await response.json();
-                if (!pulseData.length) return;
-
-                const ctx = document.getElementById('audiencePulseChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: pulseData.map(d => d.date),
-                        datasets: [{
-                            data: pulseData.map(d => d.score),
-                            borderColor: '#e50914',
-                            backgroundColor: 'rgba(229, 9, 20, 0.1)',
-                            fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 8
-                        }]
+            const pulseRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure Joy', 'Thought-Provoking'],
+                    datasets: [{
+                        label: 'Community Vibe',
+                        data: [15, 10, 5, 20, 8, 12], // In a real app, these come from your API
+                        backgroundColor: 'rgba(229, 9, 20, 0.2)',
+                        borderColor: '#e50914',
+                        borderWidth: 2,
+                        pointBackgroundColor: Object.values(vibeColors),
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#333' },
+                            grid: { color: '#333' },
+                            pointLabels: { color: '#aaa', font: { size: 12 } },
+                            ticks: { display: false },
+                            beginAtZero: true
+                        }
                     },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                        onHover: (event, activeElements) => {
-                            if (activeElements.length > 0) {
-                                const i = activeElements[0].index;
-                                const entry = pulseData[i];
-                                document.getElementById('current-movie').innerText = entry.movie;
-                                const vibeTag = document.getElementById('current-vibe');
-                                vibeTag.innerText = entry.vibe;
-                                vibeTag.style.color = vibeColorMap[entry.vibe] || '#e50914';
-                                vibeTag.style.backgroundColor = (vibeColorMap[entry.vibe] || '#e50914') + '22';
-                                document.getElementById('current-rating').innerText = `${entry.raw_rating}/10`;
-                            }
-                        },
-                        scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#444' } } }
+                    plugins: {
+                        legend: { display: false }
                     }
-                });
+                }
+            });
 
-                // Set Top Vibe in Header
-                const vibes = pulseData.map(d => d.vibe);
-                const mostCommon = vibes.sort((a,b) => vibes.filter(v => v===a).length - vibes.filter(v => v===b).length).pop();
-                document.getElementById('top-vibe').innerText = mostCommon || "Analysing...";
-            } catch (err) { console.error("Chart failed:", err); }
-        }
+            async function loadPulse() {
+                try {
+                    const response = await fetch('/api/global-pulse');
+                    const data = await response.json();
+                    
+                    if (!data.length) return;
+
+                    // --- PART A: Update the Line Chart (Heartbeat) ---
+                    const lineCtx = document.getElementById('audiencePulseChart').getContext('2d');
+                    new Chart(lineCtx, {
+                        type: 'line',
+                        data: {
+                            labels: data.map(d => d.date),
+                            datasets: [{
+                                data: data.map(d => d.score),
+                                borderColor: '#e50914',
+                                backgroundColor: 'rgba(229, 9, 20, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: { /* ... your existing line chart options ... */ }
+                    });
+
+                    // --- PART B: Update the Radar Chart (Emotional Profile) ---
+                    // We count how many times each vibe appears in the 'data' array
+                    const counts = {
+                        'Mind-Blowing': 0, 'Heartwarming': 0, 'Tear-Jerker': 0, 
+                        'Edge-of-Seat': 0, 'Pure-Joy': 0, 'Thought-Provoking': 0
+                    };
+                    
+                    data.forEach(entry => {
+                        if(counts.hasOwnProperty(entry.vibe)) counts[entry.vibe]++;
+                    });
+
+                    const radarCtx = document.getElementById('pulseRadarChart').getContext('2d');
+                    new Chart(radarCtx, {
+                        type: 'radar',
+                        data: {
+                            labels: Object.keys(counts),
+                            datasets: [{
+                                label: 'Overall Vibe',
+                                data: Object.values(counts),
+                                backgroundColor: 'rgba(229, 9, 20, 0.2)',
+                                borderColor: '#e50914',
+                                pointBackgroundColor: ['#e50914', '#ff69b4', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6']
+                            }]
+                        },
+                        options: {
+                            scales: { r: { beginAtZero: true, grid: { color: '#333' } } },
+                            plugins: { legend: { display: false } }
+                        }
+                    });
+
+                    // Set Top Vibe in Header
+                    const vibes = data.map(d => d.vibe);
+                    const mostCommon = vibes.sort((a,b) => vibes.filter(v => v===a).length - vibes.filter(v => v===b).length).pop();
+                    document.getElementById('top-vibe').innerText = mostCommon || "Analysing...";
+
+                } catch (err) {
+                    console.error("Charts failed to load:", err);
+                }
+            }
+
+            loadPulse();
+        });
 
         /* Modal & Filter Functions */
         function openDescModalFromData(element) {
@@ -331,8 +373,7 @@
                 else card.style.display = card.getAttribute('data-vibes').includes(vibe) ? 'block' : 'none';
             });
         }
-
-        window.onload = initPulseChart;
+        
     </script>
 </body>
 </html>
