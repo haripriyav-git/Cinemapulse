@@ -106,19 +106,20 @@
             {% endfor %}
           {% endif %}
         {% endwith %}
-        <div class="pulse-container">
+
+ <div class="pulse-container">
     <div class="pulse-header">
         <div>
             <div class="live-indicator"><span class="blink-dot"></span> Live Analysis</div>
             <h3 style="margin:5px 0 0 0;">Global Audience <span style="color:var(--accent-red);">Pulse</span></h3>
         </div>
         <div style="display: flex; gap: 10px;">
-            <select id="movieSelect1" class="mood-btn" onchange="initComparisonChart()" style="padding: 5px 10px;">
+            <select id="movieSelect1" class="mood-btn" onchange="initComparisonChart()">
                 {% for movie in movies %}
                 <option value="{{ movie.title }}">{{ movie.title }}</option>
                 {% endfor %}
             </select>
-            <select id="movieSelect2" class="mood-btn" onchange="initComparisonChart()" style="padding: 5px 10px;">
+            <select id="movieSelect2" class="mood-btn" onchange="initComparisonChart()">
                 <option value="">Compare with...</option>
                 {% for movie in movies %}
                 <option value="{{ movie.title }}">{{ movie.title }}</option>
@@ -127,9 +128,10 @@
         </div>
     </div>
     
-    <div style="padding: 20px; height: 350px; display: flex; justify-content: center; background: #111;">
+  <div style="position: relative; height: 400px; width: 100%; padding: 20px; background: #111;">
         <canvas id="pulseRadarChart"></canvas>
     </div>
+</div>
 </div>
         <div class="vibe-legend-card">
             <div class="legend-header">
@@ -260,80 +262,36 @@
     </div>
 
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initial load of the comparison chart
-            initComparisonChart();
-            
-            // Set up a 30-second refresh to keep it "Live"
-            setInterval(initComparisonChart, 30000);
-        });
-
-       async function initComparisonChart() {
-    try {
-        const m1 = document.getElementById('movieSelect1').value;
-        const m2 = document.getElementById('movieSelect2').value;
-
-        // Fetch data based on selected movies
-        const response = await fetch(`/api/radar-comparison?m1=${encodeURIComponent(m1)}&m2=${encodeURIComponent(m2)}`);
-        const result = await response.json();
-
-        const ctx = document.getElementById('pulseRadarChart').getContext('2d');
-        
-        // Clear old chart to redraw
-        const existingChart = Chart.getChart("pulseRadarChart");
-        if (existingChart) { existingChart.destroy(); }
-
-        new Chart(ctx, {
-            type: 'radar',
-            data: {
-                labels: result.labels,
-                datasets: result.datasets.map((ds, index) => ({
-                    label: ds.label,
-                    data: ds.data,
-                    borderColor: index === 0 ? '#e50914' : '#3498db',
-                    backgroundColor: index === 0 ? 'rgba(229, 9, 20, 0.2)' : 'rgba(52, 152, 219, 0.2)',
-                    borderWidth: 2
-                }))
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { r: { grid: { color: '#333' }, pointLabels: { color: '#aaa' }, ticks: { display: false }, beginAtZero: true } },
-                plugins: { legend: { display: true, labels: { color: '#fff' } } }
+            // Initialize functions on page load
+            if (typeof initComparisonChart === 'function') {
+                initComparisonChart();
+                setInterval(initComparisonChart, 30000);
             }
         });
-    } catch (error) {
-        console.error("Comparison failed:", error);
-    }
-}
 
-                // Update the "Top Vibe" badge in the header based on the first dataset
-                if (result.datasets.length > 0) {
-                    const firstMovieData = result.datasets[0].data;
-                    const maxVal = Math.max(...firstMovieData);
-                    const maxIndex = firstMovieData.indexOf(maxVal);
-                    const topVibe = result.labels[maxIndex];
-                    
-                    const display = document.getElementById('top-vibe-display');
-                    if(display) display.innerText = `Trending: ${topVibe}`;
-                }
-
-
-        /* Modal & Filter Functions (Kept exactly as they were) */
+        /* Modal & Filter Functions */
         function openDescModalFromData(element) {
             document.getElementById('descModalTitle').innerText = element.getAttribute('data-title');
             document.getElementById('descModalText').innerText = element.getAttribute('data-desc');
             document.getElementById('descModal').style.display = 'block';
         }
-        function closeDescModal() { document.getElementById('descModal').style.display = 'none'; }
+        
+        function closeDescModal() { 
+            document.getElementById('descModal').style.display = 'none'; 
+        }
         
         function openFeedback(title) {
             document.getElementById('modalMovieTitle').innerText = title;
             document.getElementById('hiddenMovieTitle').value = title;
             document.getElementById('feedbackModal').style.display = 'block';
         }
-        function closeFeedback() { document.getElementById('feedbackModal').style.display = 'none'; }
+        
+        function closeFeedback() { 
+            document.getElementById('feedbackModal').style.display = 'none'; 
+        }
         
         function filterVibe(vibe, btn) {
             document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));

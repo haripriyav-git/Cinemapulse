@@ -312,6 +312,32 @@ def submit_feedback():
     return redirect(url_for('dashboard'))
 
 
+@app.route('/api/radar-comparison')
+def radar_comparison():
+    # Grab movie titles from the URL parameters
+    m1 = request.args.get('m1')
+    m2 = request.args.get('m2')
+    
+    target_movies = [m for m in [m1, m2] if m]
+    
+    # Labels must match your legend/emotions exactly
+    labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking']
+    
+    datasets = []
+    for movie in target_movies:
+        counts = []
+        for emotion in labels:
+            feedback_count = Feedback.query.filter_by(movie_title=movie, vibe=emotion).count()
+            counts.append(feedback_count)
+        
+        datasets.append({
+            "label": movie,
+            "data": counts
+        })
+    
+    return jsonify({"labels": labels, "datasets": datasets})
+
+
 @app.route('/logout')
 def logout():
     session.pop('user_email', None)
