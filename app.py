@@ -265,27 +265,24 @@ def dashboard():
                            feedbacks=all_feedbacks, 
                            movie_stats=movie_stats) 
 @app.route('/api/radar-comparison')
-def get_comparison_data():
+def radar_comparison():
+    movie1 = request.args.get('m1')
+    movie2 = request.args.get('m2')
+    
+    target_movies = [m for m in [movie1, movie2] if m] # Only include if not empty
+    
     conn = sqlite3.connect('cinemapulse.db')
     cursor = conn.cursor()
+    emotions = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure Joy', 'Thought-Provoking']
     
-    emotions = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking']
-    
-    
-    movies_to_compare = ['Nayakan', 'Jai Bhim'] 
     datasets = []
-
-    for movie in movies_to_compare:
+    for movie in target_movies:
         counts = []
         for emotion in emotions:
             cursor.execute("SELECT COUNT(*) FROM feedback WHERE movie_title = ? AND vibe = ?", (movie, emotion))
             counts.append(cursor.fetchone()[0])
-        
-        datasets.append({
-            "label": movie,
-            "data": counts
-        })
-
+        datasets.append({"label": movie, "data": counts})
+    
     conn.close()
     return jsonify({"labels": emotions, "datasets": datasets})
 
