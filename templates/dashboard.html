@@ -252,143 +252,113 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. Initialize the Radar Chart
-            const ctx = document.getElementById('pulseRadarChart').getContext('2d');
+            // Initial load of the comparison chart
+            initComparisonChart();
             
-            // Define your colors to match your existing legend
-            const vibeColors = {
-                'Mind-Blowing': '#e50914',
-                'Heartwarming': '#ff69b4',
-                'Tear-Jerker': '#3498db',
-                'Edge-of-Seat': '#f1c40f',
-                'Pure-Joy': '#2ecc71',
-                'Thought-Provoking': '#9b59b6'
-            };
-
-            const pulseRadarChart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure Joy', 'Thought-Provoking'],
-                    datasets: [{
-                        label: 'Community Vibe',
-                        data: [15, 10, 5, 20, 8, 12], // In a real app, these come from your API
-                        backgroundColor: 'rgba(229, 9, 20, 0.2)',
-                        borderColor: '#e50914',
-                        borderWidth: 2,
-                        pointBackgroundColor: Object.values(vibeColors),
-                        pointRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: { color: '#333' },
-                            grid: { color: '#333' },
-                            pointLabels: { color: '#aaa', font: { size: 12 } },
-                            ticks: { display: false },
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
-
-            async function loadPulse() {
-                try {
-                    const response = await fetch('/api/global-pulse');
-                    const data = await response.json();
-                    
-                    if (!data.length) return;
-
-                    // --- PART A: Update the Line Chart (Heartbeat) ---
-                    const lineCtx = document.getElementById('audiencePulseChart').getContext('2d');
-                    new Chart(lineCtx, {
-                        type: 'line',
-                        data: {
-                            labels: data.map(d => d.date),
-                            datasets: [{
-                                data: data.map(d => d.score),
-                                borderColor: '#e50914',
-                                backgroundColor: 'rgba(229, 9, 20, 0.1)',
-                                fill: true,
-                                tension: 0.4
-                            }]
-                        },
-                        options: { /* ... your existing line chart options ... */ }
-                    });
-
-                    // --- PART B: Update the Radar Chart (Emotional Profile) ---
-                    // We count how many times each vibe appears in the 'data' array
-                    const counts = {
-                        'Mind-Blowing': 0, 'Heartwarming': 0, 'Tear-Jerker': 0, 
-                        'Edge-of-Seat': 0, 'Pure-Joy': 0, 'Thought-Provoking': 0
-                    };
-                    
-                    data.forEach(entry => {
-                        if(counts.hasOwnProperty(entry.vibe)) counts[entry.vibe]++;
-                    });
-
-                    const radarCtx = document.getElementById('pulseRadarChart').getContext('2d');
-                    new Chart(radarCtx, {
-                        type: 'radar',
-                        data: {
-                            labels: Object.keys(counts),
-                            datasets: [{
-                                label: 'Overall Vibe',
-                                data: Object.values(counts),
-                                backgroundColor: 'rgba(229, 9, 20, 0.2)',
-                                borderColor: '#e50914',
-                                pointBackgroundColor: ['#e50914', '#ff69b4', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6']
-                            }]
-                        },
-                        options: {
-                            scales: { r: { beginAtZero: true, grid: { color: '#333' } } },
-                            plugins: { legend: { display: false } }
-                        }
-                    });
-
-                    // Set Top Vibe in Header
-                    const vibes = data.map(d => d.vibe);
-                    const mostCommon = vibes.sort((a,b) => vibes.filter(v => v===a).length - vibes.filter(v => v===b).length).pop();
-                    document.getElementById('top-vibe').innerText = mostCommon || "Analysing...";
-
-                } catch (err) {
-                    console.error("Charts failed to load:", err);
-                }
-            }
-
-            loadPulse();
+            // Set up a 30-second refresh to keep it "Live"
+            setInterval(initComparisonChart, 30000);
         });
 
-        /* Modal & Filter Functions */
+        async function initComparisonChart() {
+            try {
+                const response = await fetch('/api/radar-comparison');
+                const result = await response.json();
+
+                const ctx = document.getElementById('pulseRadarChart').getContext('2d');
+                
+                // Colors for different layered movies
+                const colors = [
+                    { border: '#e50914', bg: 'rgba(229, 9, 20, 0.2)' }, // Movie 1 (Red)
+                    { border: '#3498db', bg: 'rgba(52, 152, 219, 0.2)' }, // Movie 2 (Blue)
+                    { border: '#f1c40f', bg: 'rgba(241, 196, 15, 0.2)' }  // Movie 3 (Yellow)
+                ];
+
+                // Destroy existing chart instance if it exists to prevent hover glitches
+                const existingChart = Chart.getChart("pulseRadarChart");
+                if (existingChart) {
+                    existingChart.destroy();
+                }
+
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: result.labels,
+                        datasets: result.datasets.map((ds, index) => ({
+                            label: ds.label,
+                            data: ds.data,
+                            borderColor: colors[index % colors.length].border,
+                            backgroundColor: colors[index % colors.length].bg,
+                            borderWidth: 2,
+                            pointBackgroundColor: colors[index % colors.length].border,
+                            pointRadius: 4
+                        }))
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { 
+                                display: true, 
+                                position: 'top',
+                                labels: { color: '#fff', font: { size: 12, family: 'Poppins' }, padding: 20 } 
+                            },
+                            tooltip: { enabled: true }
+                        },
+                        scales: {
+                            r: {
+                                angleLines: { color: '#333' },
+                                grid: { color: '#333' },
+                                pointLabels: { color: '#aaa', font: { size: 11 } },
+                                ticks: { display: false },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Update the "Top Vibe" badge in the header based on the first dataset
+                if (result.datasets.length > 0) {
+                    const firstMovieData = result.datasets[0].data;
+                    const maxVal = Math.max(...firstMovieData);
+                    const maxIndex = firstMovieData.indexOf(maxVal);
+                    const topVibe = result.labels[maxIndex];
+                    
+                    const display = document.getElementById('top-vibe-display');
+                    if(display) display.innerText = `Trending: ${topVibe}`;
+                }
+
+            } catch (error) {
+                console.error("Radar Comparison Chart failed:", error);
+            }
+        }
+
+        /* Modal & Filter Functions (Kept exactly as they were) */
         function openDescModalFromData(element) {
             document.getElementById('descModalTitle').innerText = element.getAttribute('data-title');
             document.getElementById('descModalText').innerText = element.getAttribute('data-desc');
             document.getElementById('descModal').style.display = 'block';
         }
         function closeDescModal() { document.getElementById('descModal').style.display = 'none'; }
+        
         function openFeedback(title) {
             document.getElementById('modalMovieTitle').innerText = title;
             document.getElementById('hiddenMovieTitle').value = title;
             document.getElementById('feedbackModal').style.display = 'block';
         }
         function closeFeedback() { document.getElementById('feedbackModal').style.display = 'none'; }
+        
         function filterVibe(vibe, btn) {
             document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.querySelectorAll('.movie-card').forEach(card => {
+                const cardVibes = card.getAttribute('data-vibes');
                 if (vibe === 'all') card.style.display = 'block';
-                else card.style.display = card.getAttribute('data-vibes').includes(vibe) ? 'block' : 'none';
+                else card.style.display = cardVibes && cardVibes.includes(vibe) ? 'block' : 'none';
             });
         }
-        
     </script>
 </body>
 </html>

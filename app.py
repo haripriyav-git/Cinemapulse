@@ -264,32 +264,30 @@ def dashboard():
                            movies=MOVIES_DATA, 
                            feedbacks=all_feedbacks, 
                            movie_stats=movie_stats) 
-@app.route('/api/radar-data')
-def get_radar_data():
-    # Connect to your CinemaPulse database
+@app.route('/api/radar-comparison')
+def get_comparison_data():
     conn = sqlite3.connect('cinemapulse.db')
     cursor = conn.cursor()
     
-    # List of your specific emotions
-    emotions = [
-        'Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 
-        'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking'
-    ]
+    emotions = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking']
     
-    data_counts = []
     
-    for emotion in emotions:
-        # Count occurrences for each emotion
-        cursor.execute("SELECT COUNT(*) FROM feedback WHERE vibe = ?", (emotion,))
-        count = cursor.fetchone()[0]
-        data_counts.append(count)
-    
+    movies_to_compare = ['Nayakan', 'Jai Bhim'] 
+    datasets = []
+
+    for movie in movies_to_compare:
+        counts = []
+        for emotion in emotions:
+            cursor.execute("SELECT COUNT(*) FROM feedback WHERE movie_title = ? AND vibe = ?", (movie, emotion))
+            counts.append(cursor.fetchone()[0])
+        
+        datasets.append({
+            "label": movie,
+            "data": counts
+        })
+
     conn.close()
-    
-    return jsonify({
-        "labels": emotions,
-        "counts": data_counts
-    })
+    return jsonify({"labels": emotions, "datasets": datasets})
 
 @app.route('/submit_feedback', methods=['POST']) 
 def submit_feedback():
