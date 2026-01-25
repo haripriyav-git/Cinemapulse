@@ -267,15 +267,21 @@ def dashboard():
 
 @app.route('/api/global-pulse')
 def global_pulse():
-    # Replace 'Feedback' with your actual Model name
-    feedbacks = Feedback.query.order_by(Feedback.date_posted.asc()).all()
-    return jsonify([{
-        "movie": f.movie_title,
-        "raw_rating": f.rating,
-        "score": f.rating * 10,  # Normalizes 1-10 to 1-100 for graph height
-        "vibe": f.vibe,
-        "date": f.date_posted.strftime("%H:%M")
-    } for f in feedbacks])
+    
+    all_feedbacks = Feedback.query.order_by(Feedback.date_posted.asc()).all()
+    
+    pulse_data = []
+    
+    for f in all_feedbacks:
+        pulse_data.append({
+            "movie": f.movie_title,       
+            "raw_rating": f.rating,    
+            "score": f.rating * 10,      
+            "vibe": f.vibe,             
+            "date": f.date_posted.strftime("%H:%M") 
+        })
+    
+    return jsonify(pulse_data)
 
 @app.route('/submit_feedback', methods=['POST']) 
 def submit_feedback():

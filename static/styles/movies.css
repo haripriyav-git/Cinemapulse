@@ -460,3 +460,37 @@ body {
 .community-feed-container::-webkit-scrollbar-thumb:hover {
     background: #ff0f1a; 
 }
+/* --- Audience Pulse Hover Enhancements --- */
+
+/* Ensures the header transitions smoothly between different vibes */
+#current-vibe {
+    transition: all 0.4s ease;
+    display: inline-block;
+    min-width: 120px;
+    text-align: center;
+}
+
+/* Specific Vibe Colors for the Pulse Tag */
+/* These are applied via JavaScript during the onHover event */
+.vibe-Mind-Blowing-active { color: #e50914 !important; background: rgba(229, 9, 20, 0.2) !important; }
+.vibe-Heartwarming-active { color: #ff69b4 !important; background: rgba(255, 105, 180, 0.2) !important; }
+.vibe-Tear-Jerker-active { color: #3498db !important; background: rgba(52, 152, 219, 0.2) !important; }
+.vibe-Edge-of-Seat-active { color: #f1c40f !important; background: rgba(241, 196, 15, 0.2) !important; }
+.vibe-Pure-Joy-active { color: #2ecc71 !important; background: rgba(46, 204, 113, 0.2) !important; }
+.vibe-Thought-Provoking-active { color: #9b59b6 !important; background: rgba(155, 89, 182, 0.2) !important; }
+
+/* Glowing Pulse Line Animation */
+.chart-wrapper canvas {
+    filter: drop-shadow(0px 0px 5px rgba(229, 9, 20, 0.3));
+}
+
+/* Hovering effect for the Pulse Card */
+.pulse-container:hover {
+    border-color: var(--primary-red);
+    box-shadow: 0 0 20px rgba(229, 9, 20, 0.2);
+}
+
+#current-movie {
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
