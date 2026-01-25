@@ -313,20 +313,20 @@ def submit_feedback():
 
 
 @app.route('/api/radar-comparison')
-def radar_comparison():
-    # Grab movie titles from the URL parameters
+def get_radar_comparison(): # Changed name to avoid AssertionError
     m1 = request.args.get('m1')
     m2 = request.args.get('m2')
     
     target_movies = [m for m in [m1, m2] if m]
     
-    # Labels must match your legend/emotions exactly
+    # Note: Ensure these strings match exactly what is in your DB 'vibe' column
     labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking']
     
     datasets = []
     for movie in target_movies:
         counts = []
         for emotion in labels:
+            # Querying the SQLite database via SQLAlchemy
             feedback_count = Feedback.query.filter_by(movie_title=movie, vibe=emotion).count()
             counts.append(feedback_count)
         
