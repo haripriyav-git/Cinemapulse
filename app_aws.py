@@ -3,23 +3,24 @@ import boto3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from datetime import datetime
 from collections import Counter
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 from boto3.dynamodb.conditions import Key
 
 application = Flask(__name__)
+# Best practice: use environment variables for keys
 application.secret_key = os.environ.get('SECRET_KEY', 'cinemapulse_2026_key')
 
-region = "us-east-1" 
-dynamodb = boto3.resource('dynamodb', region_name=region)
-sns = boto3.client('sns', region_name=region)
+# --- AWS Configuration ---
+REGION = "us-east-1" 
+dynamodb = boto3.resource('dynamodb', region_name=REGION)
+sns = boto3.client('sns', region_name=REGION)
 
-
+# Tables
 feedback_table = dynamodb.Table('CinemaFeedback')
 users_table = dynamodb.Table('CinemaUsers')
 SNS_TOPIC_ARN = os.environ.get('SNS_TOPIC_ARN') 
 
 SECURITY_PASSWORD_SALT = 'cinema-pulse-salt-secure'
-
 
 MOVIES_DATA = [
     {
@@ -148,6 +149,14 @@ def generate_token(email):
     serializer = URLSafeTimedSerializer(application.secret_key)
     return serializer.dumps(email, salt=SECURITY_PASSWORD_SALT)
 
+def confirm_token(token, expiration=1800):
+    serializer = URLSafeTimedSerializer(application.secret_key)
+    try:
+        email = serializer.loads(token, salt=SECURITY_PASSWORD_SALT, max_age=expiration)
+    except:
+        return False
+    return email
+
 # --- Routes ---
 @app.route('/')
 def index():
@@ -241,59 +250,29 @@ def reset_with_token(token):
 
     return render_template('reset_new_password.html', token=token)
 
-@app.route('/dashboard')
-def dashboard():
-    if 'user_email' not in session:
-        return redirect(url_for('login'))
-    
-    all_feedbacks = Feedback.query.all()
-    movie_stats = {}
-    
-    for movie in MOVIES_DATA:
-        vibe_list = [f.vibe for f in all_feedbacks if f.movie_title == movie['title']]
-        total = len(vibe_list)
-        if total > 0:
-            counts = Counter(vibe_list)
-            movie_stats[movie['title']] = {vibe: (count / total) * 100 for vibe, count in counts.items()}
-        else:
-            movie_stats[movie['title']] = {}
-
-    return render_template('dashboard.html', 
-                           movies=MOVIES_DATA, 
-                           feedbacks=all_feedbacks, 
-                           movie_stats=movie_stats) 
-
-@app.route('/submit_feedback', methods=['POST']) 
+    @application.route('/submit_feedback', methods=['POST'])
 def submit_feedback():
     if 'user_email' not in session:
         return redirect(url_for('login'))
     
-    
-    user_display_name = session['user_email'].split('@')[0].capitalize()
-
-    
-    rating_val = request.form.get('rating', 10) 
-
-    new_entry = Feedback(
-        user_name=user_display_name,
-        user_email=session['user_email'],
-        movie_title=request.form.get('movie_title'),
-        rating=int(rating_val),
-        vibe=request.form.get('vibe'),
-        comment=request.form.get('comment')
-    )
-    db.session.add(new_entry)
-    db.session.commit()
-    
-    flash("Pulse recorded! Thank you for sharing your vibe.")
+    feedback_id = str(datetime.utcnow().timestamp())
+    feedback_table.put_item(Item={
+        'id': feedback_id,
+        'user_email': session['user_email'],
+        'movie_title': request.form.get('movie_title'),
+        'rating': int(request.form.get('rating', 10)),
+        'vibe': request.form.get('vibe'),
+        'comment': request.form.get('comment'),
+        'date_posted': datetime.utcnow().isoformat()
+    })
+    flash("Pulse recorded!")
     return redirect(url_for('dashboard'))
 
-
-@app.route('/logout')
+@application.route('/logout')
 def logout():
     session.pop('user_email', None)
     return redirect(url_for('index'))
 
-
 if __name__ == '__main__':
     application.run(host='0.0.0.0', port=5000)
+
