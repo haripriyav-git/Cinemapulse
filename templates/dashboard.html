@@ -128,9 +128,15 @@
         </div>
     </div>
     
-    <div style="position: relative; height: 400px; width: 100%; padding: 20px; background: #0b0b0b;">
+    <div style="position: relative; height: 550px; width: 100%; padding: 20px 20px 40px 20px; background: #0b0b0b;">
         <canvas id="pulseRadarChart"></canvas>
     </div>
+
+    <div id="pulseDescription" style="padding: 20px; background: #111; border-top: 1px solid #222; font-size: 0.95rem; color: #ccc; line-height: 1.6;">
+        Select movies above to begin the pulse comparison.
+    </div>
+</div>
+
 </div>
         <div class="vibe-legend-card">
             <div class="legend-header">
@@ -269,10 +275,13 @@
         setInterval(initComparisonChart, 30000);
     });
 
+
+
   async function initComparisonChart() {
     try {
         const m1 = document.getElementById('movieSelect1').value;
         const m2 = document.getElementById('movieSelect2').value;
+        const descriptionBox = document.getElementById('pulseDescription');
 
         const response = await fetch(`/api/radar-comparison?m1=${encodeURIComponent(m1)}&m2=${encodeURIComponent(m2)}`);
         const result = await response.json();
@@ -280,6 +289,13 @@
         const ctx = document.getElementById('pulseRadarChart').getContext('2d');
         const existingChart = Chart.getChart("pulseRadarChart");
         if (existingChart) { existingChart.destroy(); }
+
+        // --- DYNAMIC DESCRIPTION LOGIC ---
+        let descriptionText = `<strong>Current Pulse:</strong> Analyzing 119 reviews for <span style="color:#e50914">${m1}</span> across six emotional dimensions.`;
+        if (m2) {
+            descriptionText = `<strong>Comparative Pulse:</strong> You are viewing a side-by-side comparison of <span style="color:#e50914">${m1}</span> and <span style="color:#3498db">${m2}</span>. This graph tracks audience sentiment peaks to show which film is more impactful in categories like "Thought-Provoking" and "Edge-of-Seat".`;
+        }
+        descriptionBox.innerHTML = descriptionText;
 
         new Chart(ctx, {
             type: 'line', 
@@ -291,25 +307,35 @@
                     borderColor: index === 0 ? '#e50914' : '#3498db',
                     backgroundColor: index === 0 ? 'rgba(229, 9, 20, 0.1)' : 'rgba(52, 152, 219, 0.1)',
                     fill: true,
-                    tension: 0.4, // Creates the smooth pulse wave
-                    borderWidth: 3,
-                    pointRadius: 5,
+                    tension: 0.4,
+                    borderWidth: 4,
+                    pointRadius: 6,
                     pointBackgroundColor: '#fff'
                 }))
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                layout: { padding: { bottom: 20 } },
+                plugins: {
+                    legend: { labels: { color: '#fff', font: { size: 14 } } }
+                },
                 scales: {
                     y: { 
                         beginAtZero: true, 
                         grid: { color: '#222' },
-                        ticks: { stepSize: 1, color: '#888' } 
+                        title: {
+                            display: true,
+                            text: 'Number of Reviews',
+                            color: '#e50914',
+                            font: { size: 14, weight: 'bold' }
+                        },
+                        ticks: { color: '#888', font: { size: 12 }, stepSize: 1 } 
                     },
-                    x: { grid: { display: false }, ticks: { color: '#aaa' } }
-                },
-                plugins: {
-                    legend: { labels: { color: '#fff' } }
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { color: '#aaa', font: { size: 12 }, padding: 10 } 
+                    }
                 }
             }
         });
@@ -317,7 +343,7 @@
         console.error("Pulse comparison failed:", error);
     }
 }
-    /* Modal & Filter Functions (Untouched) */
+
     function openDescModalFromData(element) {
         document.getElementById('descModalTitle').innerText = element.getAttribute('data-title');
         document.getElementById('descModalText').innerText = element.getAttribute('data-desc');
