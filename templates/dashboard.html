@@ -137,12 +137,11 @@
     </div>
 </div>
 
-</div>
-        <div class="vibe-legend-card">
-            <div class="legend-header">
-                <h3>What is a Cinema<span>Pulse</span>?</h3>
-                <p>Each color represents a unique emotional "pulse":</p>
-            </div>
+    <div class="vibe-legend-card">
+        <div class="legend-header">
+            <h3>What is a Cinema<span>Pulse</span>?</h3>
+            <p>Each color represents a unique emotional "pulse":</p>
+        </div>
             <div class="legend-grid">
                 <div class="legend-item"><span class="dot mind-blowing"></span><strong>Mind-Blowing</strong></div>
                 <div class="legend-item"><span class="dot heartwarming"></span><strong>Heartwarming</strong></div>
@@ -275,9 +274,7 @@
         setInterval(initComparisonChart, 30000);
     });
 
-
-
-  async function initComparisonChart() {
+async function initComparisonChart() {
     try {
         const m1 = document.getElementById('movieSelect1').value;
         const m2 = document.getElementById('movieSelect2').value;
@@ -290,60 +287,81 @@
         const existingChart = Chart.getChart("pulseRadarChart");
         if (existingChart) { existingChart.destroy(); }
 
-        // --- DYNAMIC DESCRIPTION LOGIC ---
-        let descriptionText = `<strong>Current Pulse:</strong> Analyzing 119 reviews for <span style="color:#e50914">${m1}</span> across six emotional dimensions.`;
-        if (m2) {
-            descriptionText = `<strong>Comparative Pulse:</strong> You are viewing a side-by-side comparison of <span style="color:#e50914">${m1}</span> and <span style="color:#3498db">${m2}</span>. This graph tracks audience sentiment peaks to show which film is more impactful in categories like "Thought-Provoking" and "Edge-of-Seat".`;
-        }
-        descriptionBox.innerHTML = descriptionText;
+        const vibeColors = ['#e50914', '#ff69b4', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6'];
+
+        // --- HIGHEST IMPACT LOGIC ---
+        let globalMax = 0;
+        let maxPoint = { x: 0, y: 0, movie: "" };
+
+        result.datasets.forEach((ds, dsIndex) => {
+            ds.data.forEach((val, i) => {
+                if (val > globalMax) {
+                    globalMax = val;
+                    maxPoint = { x: i, y: val, movie: ds.label };
+                }
+            });
+        });
+
+        // Dynamic Conclusion (as requested)
+        const topVibe = result.labels[maxPoint.x];
+        descriptionBox.innerHTML = `<strong>Pulse Conclusion:</strong> The highest impact is currently felt in the <strong>${topVibe}</strong> category for ${maxPoint.movie}. This suggests it's the dominant emotional driver for current audiences.`;
 
         new Chart(ctx, {
             type: 'line', 
             data: {
                 labels: result.labels,
                 datasets: result.datasets.map((ds, index) => ({
-                    label: ds.label,
+                    label: `${ds.label} (${ds.data.reduce((a, b) => a + b, 0)} Reviews)`,
                     data: ds.data,
                     borderColor: index === 0 ? '#e50914' : '#3498db',
                     backgroundColor: index === 0 ? 'rgba(229, 9, 20, 0.1)' : 'rgba(52, 152, 219, 0.1)',
                     fill: true,
                     tension: 0.4,
                     borderWidth: 4,
-                    pointRadius: 6,
-                    pointBackgroundColor: '#fff'
+                    pointBackgroundColor: vibeColors,
+                    pointRadius: 7
                 }))
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                layout: { padding: { bottom: 30 } },
                 plugins: {
-                    legend: { labels: { color: '#fff', font: { size: 20 } } }
+                    legend: { labels: { color: '#fff' } },
+                    // This custom plugin draws the badge
+                    afterDraw: (chart) => {
+                        if (globalMax === 0) return;
+                        const { ctx, scales: { x, y } } = chart;
+                        ctx.save();
+                        const xPos = x.getPixelForValue(result.labels[maxPoint.x]);
+                        const yPos = y.getPixelForValue(maxPoint.y);
+
+                        // Draw Badge Box
+                        ctx.fillStyle = '#e50914';
+                        ctx.roundRect(xPos - 45, yPos - 35, 90, 25, 5);
+                        ctx.fill();
+
+                        // Draw Badge Text
+                        ctx.fillStyle = '#fff';
+                        ctx.font = 'bold 10px Poppins';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('HIGHEST IMPACT', xPos, yPos - 18);
+                        ctx.restore();
+                    }
                 },
                 scales: {
                     y: { 
                         beginAtZero: true, 
-                        grid: { color: '#222' },
-                        title: {
-                            display: true,
-                            text: 'Number of Reviews',
-                            color: '#e50914',
-                            font: { size: 14, weight: 'bold' }
-                        },
-                        ticks: { color: '#888', font: { size: 12 }, stepSize: 1 } 
+                        title: { display: true, text: 'Number of Reviews', color: '#e50914' },
+                        ticks: { color: '#888', stepSize: 1 } 
                     },
-                    x: { 
-                        grid: { display: false }, 
-                        ticks: { color: '#aaa', font: { size: 12 }, padding: 40 } 
-                    }
+                    x: { ticks: { color: '#aaa', font: { size: 12 } } }
                 }
             }
         });
     } catch (error) {
-        console.error("Pulse comparison failed:", error);
+        console.error("Pulse Graph Error:", error);
     }
 }
-
     function openDescModalFromData(element) {
         document.getElementById('descModalTitle').innerText = element.getAttribute('data-title');
         document.getElementById('descModalText').innerText = element.getAttribute('data-desc');
