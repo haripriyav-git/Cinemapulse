@@ -107,11 +107,11 @@
           {% endif %}
         {% endwith %}
 
- <div class="pulse-container">
+<div class="pulse-container">
     <div class="pulse-header">
         <div>
             <div class="live-indicator"><span class="blink-dot"></span> Live Analysis</div>
-            <h3 style="margin:5px 0 0 0;">Global Audience <span style="color:var(--accent-red);">Pulse</span></h3>
+            <h3 style="margin:5px 0 0 0;">Movie <span style="color:var(--accent-red);">Pulse</span> Comparison</h3>
         </div>
         <div style="display: flex; gap: 10px;">
             <select id="movieSelect1" class="mood-btn" onchange="initComparisonChart()">
@@ -128,10 +128,9 @@
         </div>
     </div>
     
-  <div style="position: relative; height: 400px; width: 100%; padding: 20px; background: #111;">
+    <div style="position: relative; height: 400px; width: 100%; padding: 20px; background: #0b0b0b;">
         <canvas id="pulseRadarChart"></canvas>
     </div>
-</div>
 </div>
         <div class="vibe-legend-card">
             <div class="legend-header">
@@ -265,82 +264,59 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize the radar chart on page load
-        initComparisonChart();
+        setTimeout(initComparisonChart, 100);
         // Refresh data every 30 seconds for the "Live" feel
         setInterval(initComparisonChart, 30000);
     });
 
-    async function initComparisonChart() {
-        try {
-            const m1 = document.getElementById('movieSelect1').value;
-            const m2 = document.getElementById('movieSelect2').value;
+  async function initComparisonChart() {
+    try {
+        const m1 = document.getElementById('movieSelect1').value;
+        const m2 = document.getElementById('movieSelect2').value;
 
-            // Fetch data from Flask API
-            const response = await fetch(`/api/radar-comparison?m1=${encodeURIComponent(m1)}&m2=${encodeURIComponent(m2)}`);
-            const result = await response.json();
+        const response = await fetch(`/api/radar-comparison?m1=${encodeURIComponent(m1)}&m2=${encodeURIComponent(m2)}`);
+        const result = await response.json();
 
-            const canvas = document.getElementById('pulseRadarChart');
-            if (!canvas) return;
+        const ctx = document.getElementById('pulseRadarChart').getContext('2d');
+        const existingChart = Chart.getChart("pulseRadarChart");
+        if (existingChart) { existingChart.destroy(); }
 
-            const ctx = canvas.getContext('2d');
-            
-            // Clean up old chart instance to prevent memory leaks and flickering
-            const existingChart = Chart.getChart("pulseRadarChart");
-            if (existingChart) {
-                existingChart.destroy();
-            }
-
-            new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: result.labels,
-                    datasets: result.datasets.map((ds, index) => ({
-                        label: ds.label,
-                        data: ds.data,
-                        borderColor: index === 0 ? '#e50914' : '#3498db',
-                        backgroundColor: index === 0 ? 'rgba(229, 9, 20, 0.2)' : 'rgba(52, 152, 219, 0.2)',
-                        borderWidth: 2,
-                        pointBackgroundColor: index === 0 ? '#e50914' : '#3498db',
-                        pointRadius: 4
-                    }))
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            labels: { color: '#fff', font: { family: 'Poppins', size: 12 } }
-                        }
+        new Chart(ctx, {
+            type: 'line', 
+            data: {
+                labels: result.labels,
+                datasets: result.datasets.map((ds, index) => ({
+                    label: ds.label,
+                    data: ds.data,
+                    borderColor: index === 0 ? '#e50914' : '#3498db',
+                    backgroundColor: index === 0 ? 'rgba(229, 9, 20, 0.1)' : 'rgba(52, 152, 219, 0.1)',
+                    fill: true,
+                    tension: 0.4, // Creates the smooth pulse wave
+                    borderWidth: 3,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#fff'
+                }))
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: '#222' },
+                        ticks: { stepSize: 1, color: '#888' } 
                     },
-                    scales: {
-                        r: {
-                            angleLines: { color: '#333' },
-                            grid: { color: '#333' },
-                            pointLabels: { color: '#aaa', font: { size: 11 } },
-                            ticks: { display: false },
-                            beginAtZero: true
-                        }
-                    }
+                    x: { grid: { display: false }, ticks: { color: '#aaa' } }
+                },
+                plugins: {
+                    legend: { labels: { color: '#fff' } }
                 }
-            });
-
-            // Update the dynamic Top Vibe display
-            if (result.datasets.length > 0) {
-                const dataPoints = result.datasets[0].data;
-                const maxVal = Math.max(...dataPoints);
-                const maxIndex = dataPoints.indexOf(maxVal);
-                const topVibe = result.labels[maxIndex];
-                
-                const display = document.getElementById('top-vibe-display');
-                if(display) display.innerText = `Trending: ${topVibe}`;
             }
-
-        } catch (error) {
-            console.error("Radar Chart initialization failed:", error);
-        }
+        });
+    } catch (error) {
+        console.error("Pulse comparison failed:", error);
     }
-
+}
     /* Modal & Filter Functions (Untouched) */
     function openDescModalFromData(element) {
         document.getElementById('descModalTitle').innerText = element.getAttribute('data-title');

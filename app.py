@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+import sqlite3
 from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -265,27 +266,29 @@ def dashboard():
                            feedbacks=all_feedbacks, 
                            movie_stats=movie_stats) 
 @app.route('/api/radar-comparison')
-def radar_comparison():
-    movie1 = request.args.get('m1')
-    movie2 = request.args.get('m2')
+def get_radar_comparison():
+    m1 = request.args.get('m1')
+    m2 = request.args.get('m2')
     
-    target_movies = [m for m in [movie1, movie2] if m] # Only include if not empty
+    target_movies = [m for m in [m1, m2] if m]
     
-    conn = sqlite3.connect('cinemapulse.db')
-    cursor = conn.cursor()
-    emotions = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure Joy', 'Thought-Provoking']
+    # These labels must match your database 'vibe' column strings exactly
+    labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking']
     
     datasets = []
     for movie in target_movies:
         counts = []
-        for emotion in emotions:
-            cursor.execute("SELECT COUNT(*) FROM feedback WHERE movie_title = ? AND vibe = ?", (movie, emotion))
-            counts.append(cursor.fetchone()[0])
-        datasets.append({"label": movie, "data": counts})
+        for emotion in labels:
+            # Query the real feedback data based on movie title and vibe
+            feedback_count = Feedback.query.filter_by(movie_title=movie, vibe=emotion).count()
+            counts.append(feedback_count)
+        
+        datasets.append({
+            "label": movie,
+            "data": counts
+        })
     
-    conn.close()
-    return jsonify({"labels": emotions, "datasets": datasets})
-
+    return jsonify({"labels": labels, "datasets": datasets})
 @app.route('/submit_feedback', methods=['POST']) 
 def submit_feedback():
     if 'user_email' not in session:
@@ -310,32 +313,6 @@ def submit_feedback():
     
     flash("Pulse recorded! Thank you for sharing your vibe.")
     return redirect(url_for('dashboard'))
-
-
-@app.route('/api/radar-comparison')
-def get_radar_comparison(): # Changed name to avoid AssertionError
-    m1 = request.args.get('m1')
-    m2 = request.args.get('m2')
-    
-    target_movies = [m for m in [m1, m2] if m]
-    
-    # Note: Ensure these strings match exactly what is in your DB 'vibe' column
-    labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking']
-    
-    datasets = []
-    for movie in target_movies:
-        counts = []
-        for emotion in labels:
-            # Querying the SQLite database via SQLAlchemy
-            feedback_count = Feedback.query.filter_by(movie_title=movie, vibe=emotion).count()
-            counts.append(feedback_count)
-        
-        datasets.append({
-            "label": movie,
-            "data": counts
-        })
-    
-    return jsonify({"labels": labels, "datasets": datasets})
 
 
 @app.route('/logout')
