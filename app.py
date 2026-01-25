@@ -264,6 +264,32 @@ def dashboard():
                            movies=MOVIES_DATA, 
                            feedbacks=all_feedbacks, 
                            movie_stats=movie_stats) 
+@app.route('/api/radar-data')
+def get_radar_data():
+    # Connect to your CinemaPulse database
+    conn = sqlite3.connect('cinemapulse.db')
+    cursor = conn.cursor()
+    
+    # List of your specific emotions
+    emotions = [
+        'Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 
+        'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking'
+    ]
+    
+    data_counts = []
+    
+    for emotion in emotions:
+        # Count occurrences for each emotion
+        cursor.execute("SELECT COUNT(*) FROM feedback WHERE vibe = ?", (emotion,))
+        count = cursor.fetchone()[0]
+        data_counts.append(count)
+    
+    conn.close()
+    
+    return jsonify({
+        "labels": emotions,
+        "counts": data_counts
+    })
 
 @app.route('/submit_feedback', methods=['POST']) 
 def submit_feedback():
