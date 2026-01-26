@@ -266,29 +266,30 @@ def dashboard():
                            feedbacks=all_feedbacks, 
                            movie_stats=movie_stats) 
 @app.route('/api/radar-comparison')
-def get_radar_comparison():
+def radar_comparison():
     m1 = request.args.get('m1')
     m2 = request.args.get('m2')
     
-    target_movies = [m for m in [m1, m2] if m]
+    # These labels must match your JavaScript labels exactly
+    labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure Joy', 'Thought-Provoking']
     
-    # These labels must match your database 'vibe' column strings exactly
-    labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking']
+    def get_vibe_data(movie_title):
+        if not movie_title:
+            return [0] * len(labels)
+        # Fetch actual counts from your Feedback table
+        return [Feedback.query.filter_by(movie_title=movie_title, vibe=v).count() for v in labels]
+
+    datasets = [
+        {'label': m1, 'data': get_vibe_data(m1)},
+    ]
     
-    datasets = []
-    for movie in target_movies:
-        counts = []
-        for emotion in labels:
-            # Query the real feedback data based on movie title and vibe
-            feedback_count = Feedback.query.filter_by(movie_title=movie, vibe=emotion).count()
-            counts.append(feedback_count)
-        
-        datasets.append({
-            "label": movie,
-            "data": counts
-        })
-    
-    return jsonify({"labels": labels, "datasets": datasets})
+    if m2:
+        datasets.append({'label': m2, 'data': get_vibe_data(m2)})
+
+    return jsonify({
+        'labels': labels,
+        'datasets': datasets
+    })
 @app.route('/submit_feedback', methods=['POST']) 
 def submit_feedback():
     if 'user_email' not in session:

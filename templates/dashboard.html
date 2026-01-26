@@ -107,33 +107,45 @@
           {% endif %}
         {% endwith %}
 
-<div class="pulse-container">
-    <div class="pulse-header">
+<div class="dashboard-wrapper">
+    <div class="pulse-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
         <div>
-            <div class="live-indicator"><span class="blink-dot"></span> Live Analysis</div>
-            <h3 style="margin:5px 0 0 0;">Movie <span style="color:var(--accent-red);">Pulse</span> Comparison</h3>
+            <span class="blink-dot"></span>
+            <span style="font-size: 0.75rem; letter-spacing: 1px; color: #888; font-weight: bold;">LIVE PULSE ANALYSIS</span>
+            <h2 style="margin: 5px 0;">CinemaPulse Dashboard</h2>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <select id="movieSelect1" class="mood-btn" onchange="initComparisonChart()">
-                {% for movie in movies %}
-                <option value="{{ movie.title }}">{{ movie.title }}</option>
-                {% endfor %}
+        <div style="display:flex; gap: 10px;">
+            <select id="movieSelect1" onchange="initPulseDashboard()" style="background:#222; color:white; border:1px solid #444; padding:8px; border-radius:5px;">
+                {% for movie in movies %}<option value="{{ movie.title }}">{{ movie.title }}</option>{% endfor %}
             </select>
-            <select id="movieSelect2" class="mood-btn" onchange="initComparisonChart()">
+            <select id="movieSelect2" onchange="initPulseDashboard()" style="background:#222; color:white; border:1px solid #444; padding:8px; border-radius:5px;">
                 <option value="">Compare with...</option>
-                {% for movie in movies %}
-                <option value="{{ movie.title }}">{{ movie.title }}</option>
-                {% endfor %}
+                {% for movie in movies %}<option value="{{ movie.title }}">{{ movie.title }}</option>{% endfor %}
             </select>
         </div>
-    </div>
-    
-    <div style="position: relative; height: 550px; width: 100%; padding: 20px 20px 40px 20px; background: #0b0b0b;">
-        <canvas id="pulseRadarChart"></canvas>
     </div>
 
-    <div id="pulseDescription" style="padding: 20px; background: #111; border-top: 1px solid #222; font-size: 0.95rem; color: #ccc; line-height: 1.6;">
-        Select movies above to begin the pulse comparison.
+    <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
+        <div class="metric-card" style="background:#1a1a1a; padding:20px; border-radius:12px; border-top: 4px solid #e50914;">
+            <small style="color:#888; font-weight:bold;">TOTAL PULSE</small>
+            <h2 id="total-reviews-count" style="margin:10px 0 0;">0</h2>
+        </div>
+        <div class="metric-card" style="background:#1a1a1a; padding:20px; border-radius:12px; border-top: 4px solid #2ecc71;">
+            <small style="color:#888; font-weight:bold;">PEAK RESONANCE</small>
+            <h2 id="top-vibe-name" style="margin:10px 0 0; font-size: 1.2rem; color: #2ecc71;">--</h2>
+        </div>
+        <div class="metric-card" style="background:#1a1a1a; padding:20px; border-radius:12px; border-top: 4px solid #3498db;">
+            <small style="color:#888; font-weight:bold;">ENGAGEMENT</small>
+            <h2 style="margin:10px 0 0; color: #3498db;">ACTIVE</h2>
+        </div>
+    </div>
+
+    <div class="chart-container" style="background: #050505; border-radius: 15px; border: 1px solid #333; height: 400px; padding: 20px; margin-bottom: 25px;">
+        <canvas id="pulsePolarChart"></canvas>
+    </div>
+
+    <div id="pulseDescription" style="padding: 20px; background: #111; border-left: 4px solid #e50914; border-radius: 8px; color: #ccc; font-size: 0.95rem; line-height: 1.6;">
+        Initializing real-time community heartbeat...
     </div>
 </div>
 
@@ -267,101 +279,123 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    // Global Constants
+    const vibeColors = ['#e50914', '#ff69b4', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6'];
+    const labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure Joy', 'Thought-Provoking'];
+
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize the radar chart on page load
-        setTimeout(initComparisonChart, 100);
+        // Initialize the polar chart on page load
+        setTimeout(initPulseDashboard, 200);
         // Refresh data every 30 seconds for the "Live" feel
-        setInterval(initComparisonChart, 30000);
+        setInterval(initPulseDashboard, 30000);
     });
 
-async function initComparisonChart() {
-    try {
-        const m1 = document.getElementById('movieSelect1').value;
-        const m2 = document.getElementById('movieSelect2').value;
-        const descriptionBox = document.getElementById('pulseDescription');
+    async function initPulseDashboard() {
+        const m1Select = document.getElementById('movieSelect1');
+        const m2Select = document.getElementById('movieSelect2');
+        
+        if (!m1Select) return; // Guard against missing elements
 
-        const response = await fetch(`/api/radar-comparison?m1=${encodeURIComponent(m1)}&m2=${encodeURIComponent(m2)}`);
-        const result = await response.json();
+        const m1 = m1Select.value;
+        const m2 = m2Select ? m2Select.value : "";
 
-        const ctx = document.getElementById('pulseRadarChart').getContext('2d');
-        const existingChart = Chart.getChart("pulseRadarChart");
-        if (existingChart) { existingChart.destroy(); }
+        try {
+            const response = await fetch(`/api/radar-comparison?m1=${encodeURIComponent(m1)}&m2=${encodeURIComponent(m2)}`);
+            const result = await response.json();
+            
+            const canvas = document.getElementById('pulsePolarChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            const existing = Chart.getChart("pulsePolarChart");
+            if (existing) existing.destroy();
 
-        const vibeColors = ['#e50914', '#ff69b4', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6'];
-
-        // --- HIGHEST IMPACT LOGIC ---
-        let globalMax = 0;
-        let maxPoint = { x: 0, y: 0, movie: "" };
-
-        result.datasets.forEach((ds, dsIndex) => {
-            ds.data.forEach((val, i) => {
-                if (val > globalMax) {
-                    globalMax = val;
-                    maxPoint = { x: i, y: val, movie: ds.label };
+            new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: labels,
+                    datasets: result.datasets.map((ds, i) => ({
+                        label: ds.label,
+                        data: ds.data,
+                        backgroundColor: i === 0 ? vibeColors.map(c => c + 'aa') : 'rgba(255,255,255,0.1)',
+                        borderColor: '#111',
+                        borderWidth: 2
+                    }))
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    scales: { 
+                        r: { 
+                            grid: { color: '#222' }, 
+                            ticks: { display: false },
+                            angleLines: { color: '#333' }
+                        } 
+                    },
+                    plugins: { 
+                        legend: { 
+                            position: 'right', 
+                            labels: { color: '#888', font: { family: 'Poppins', size: 11 } } 
+                        } 
+                    }
                 }
             });
-        });
 
-        // Dynamic Conclusion (as requested)
-        const topVibe = result.labels[maxPoint.x];
-        descriptionBox.innerHTML = `<strong>Pulse Conclusion:</strong> The highest impact is currently felt in the <strong>${topVibe}</strong> category for ${maxPoint.movie}. This suggests it's the dominant emotional driver for current audiences.`;
-
-        new Chart(ctx, {
-            type: 'line', 
-            data: {
-                labels: result.labels,
-                datasets: result.datasets.map((ds, index) => ({
-                    label: `${ds.label} (${ds.data.reduce((a, b) => a + b, 0)} Reviews)`,
-                    data: ds.data,
-                    borderColor: index === 0 ? '#e50914' : '#3498db',
-                    backgroundColor: index === 0 ? 'rgba(229, 9, 20, 0.1)' : 'rgba(52, 152, 219, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 4,
-                    pointBackgroundColor: vibeColors,
-                    pointRadius: 7
-                }))
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#fff' } },
-                    // This custom plugin draws the badge
-                    afterDraw: (chart) => {
-                        if (globalMax === 0) return;
-                        const { ctx, scales: { x, y } } = chart;
-                        ctx.save();
-                        const xPos = x.getPixelForValue(result.labels[maxPoint.x]);
-                        const yPos = y.getPixelForValue(maxPoint.y);
-
-                        // Draw Badge Box
-                        ctx.fillStyle = '#e50914';
-                        ctx.roundRect(xPos - 45, yPos - 35, 90, 25, 5);
-                        ctx.fill();
-
-                        // Draw Badge Text
-                        ctx.fillStyle = '#fff';
-                        ctx.font = 'bold 10px Poppins';
-                        ctx.textAlign = 'center';
-                        ctx.fillText('HIGHEST IMPACT', xPos, yPos - 18);
-                        ctx.restore();
-                    }
-                },
-                scales: {
-                    y: { 
-                        beginAtZero: true, 
-                        title: { display: true, text: 'Number of Reviews', color: '#e50914' },
-                        ticks: { color: '#888', stepSize: 1 } 
-                    },
-                    x: { ticks: { color: '#aaa', font: { size: 12 } } }
-                }
-            }
-        });
-    } catch (error) {
-        console.error("Pulse Graph Error:", error);
+            // Update Metrics and Conclusion text
+            updateRealTimeAnalysis(result, m1, m2);
+        } catch (e) { 
+            console.error("Dashboard Sync Error:", e); 
+            const desc = document.getElementById('pulseDescription');
+            if (desc) desc.innerText = "Offline: Unable to sync with live pulse.";
+        }
     }
-}
+
+    function updateRealTimeAnalysis(result, m1, m2) {
+        if (!result.datasets || result.datasets.length === 0) return;
+
+        const data1 = result.datasets[0].data;
+        const total = data1.reduce((a, b) => a + b, 0);
+        const peakIdx = data1.indexOf(Math.max(...data1));
+        
+        // Update Stats Cards
+        const totalElem = document.getElementById('total-reviews-count');
+        const vibeElem = document.getElementById('top-vibe-name');
+        const descElem = document.getElementById('pulseDescription');
+
+        if (totalElem) totalElem.innerText = total;
+        if (vibeElem) {
+            vibeElem.innerText = total > 0 ? labels[peakIdx] : "--";
+            vibeElem.style.color = total > 0 ? vibeColors[peakIdx] : "#2ecc71";
+        }
+        
+        // Real-Time Inference Logic
+        if (descElem) {
+            if (total > 0) {
+                let conclusion = `<strong>Real-Time Movie Conclusion:</strong> <em>${m1}</em> is currently peaking with a <span style="color:${vibeColors[peakIdx]}"><strong>${labels[peakIdx]}</strong></span> resonance. `;
+                conclusion += `Viewers can infer a high emotional intensity in this category, suggesting the film's core impact is driven by its ability to be ${labels[peakIdx].toLowerCase()}.`;
+                
+                if (m2 && result.datasets[1]) {
+                    const d2 = result.datasets[1].data;
+                    const peak2 = d2.indexOf(Math.max(...d2));
+                    conclusion += `<br><br>Comparatively, <em>${m2}</em> leans toward a <strong>${labels[peak2]}</strong> vibe, highlighting a distinct emotional divergence between the two titles.`;
+                }
+                descElem.innerHTML = conclusion;
+            } else {
+                descElem.innerText = "No pulses recorded yet for the selected titles.";
+            }
+        }
+    }
+
+    // Modal & UI Functions
+    function openReadMore(title, desc) {
+        const mTitle = document.getElementById('modalTitle');
+        const mDesc = document.getElementById('modalDescription');
+        if (mTitle) mTitle.innerText = title;
+        if (mDesc) mDesc.innerText = desc;
+        const modal = document.getElementById('readMoreModal');
+        if (modal) modal.style.display = 'block';
+    }
+
     function openDescModalFromData(element) {
         document.getElementById('descModalTitle').innerText = element.getAttribute('data-title');
         document.getElementById('descModalText').innerText = element.getAttribute('data-desc');
@@ -373,13 +407,18 @@ async function initComparisonChart() {
     }
     
     function openFeedback(title) {
-        document.getElementById('modalMovieTitle').innerText = title;
+        document.getElementById('modalMovieTitle').innerText = "Pulse: " + title;
         document.getElementById('hiddenMovieTitle').value = title;
         document.getElementById('feedbackModal').style.display = 'block';
     }
     
     function closeFeedback() { 
         document.getElementById('feedbackModal').style.display = 'none'; 
+    }
+
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) modal.style.display = 'none';
     }
     
     function filterVibe(vibe, btn) {
@@ -392,5 +431,3 @@ async function initComparisonChart() {
         });
     }
 </script>
-</body>
-</html>

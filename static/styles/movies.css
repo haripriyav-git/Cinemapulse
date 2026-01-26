@@ -188,3 +188,34 @@ input {
     50% { opacity: 0.3; }
     100% { opacity: 1; }
 }
+.metric-card {
+    background: #1a1a1a;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    transition: 0.3s;
+}
+.metric-card small { color: #888; font-weight: bold; font-size: 0.65rem; }
+.metric-card h3 { margin: 5px 0; font-size: 1.5rem; }
+.trend-indicator { font-size: 0.65rem; color: #2ecc71; }
+
+.blink-dot {
+    height: 8px; width: 8px; background: #e50914;
+    border-radius: 50%; display: inline-block; margin-right: 5px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(229, 9, 20, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0); }
+}
+
+/* Fixed: Individual Read More Functionality */
+.movie-desc-short {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2; /* Standard Property for compatibility */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
