@@ -59,7 +59,7 @@ MOVIES_DATA = [
     {
         "rank": 3, "title": "Nayakan", "year": 1987, "rating": 8.6,
         "lang": "Tamil", "genre": "Epic / Crime",
-        "desc": "A common man's evolution from a slum dweller to a feared and respected underworld don in Bombay.",
+        "desc": "An odyssey of power and justice, where the lines between criminal and savior blur in the shadows of Bombay",
         "img": "https://i.pinimg.com/736x/4f/b2/b3/4fb2b3b8cf1ebf2aeec49673c52a79cb.jpg"
     },
     {
@@ -270,26 +270,18 @@ def radar_comparison():
     m1 = request.args.get('m1')
     m2 = request.args.get('m2')
     
-    # These labels must match your JavaScript labels exactly
     labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure Joy', 'Thought-Provoking']
     
-    def get_vibe_data(movie_title):
-        if not movie_title:
-            return [0] * len(labels)
-        # Fetch actual counts from your Feedback table
-        return [Feedback.query.filter_by(movie_title=movie_title, vibe=v).count() for v in labels]
+    def get_counts(title):
+        if not title: return [0] * 6
+        return [Feedback.query.filter_by(movie_title=title, vibe=v).count() for v in labels]
 
-    datasets = [
-        {'label': m1, 'data': get_vibe_data(m1)},
-    ]
-    
+    datasets = [{'label': m1, 'data': get_counts(m1)}]
     if m2:
-        datasets.append({'label': m2, 'data': get_vibe_data(m2)})
+        datasets.append({'label': m2, 'data': get_counts(m2)})
 
-    return jsonify({
-        'labels': labels,
-        'datasets': datasets
-    })
+    return jsonify({'labels': labels, 'datasets': datasets})
+    
 @app.route('/submit_feedback', methods=['POST']) 
 def submit_feedback():
     if 'user_email' not in session:

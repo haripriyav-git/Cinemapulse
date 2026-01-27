@@ -197,8 +197,12 @@
                         <span class="badge">{{ movie.genre }}</span>
                     </div>
                     <p class="movie-desc-short">{{ movie.desc }}</p>
-                    <span class="read-more-link" data-title="{{ movie.title }}" data-desc="{{ movie.desc }}" onclick="openDescModalFromData(this)">Read More</span>
-
+    <span class="read-more-link" 
+      data-title="{{ movie.title }}" 
+      data-desc="{{ movie.desc }}" 
+      onclick="openAnalysisModal(this)">
+      Read Analysis →
+</span>
                     <div style="font-size: 0.65rem; color: var(--text-gray); margin-top: 12px; text-transform: uppercase;">Community Pulse</div>
                     <div class="vibe-meter-container">
                         {% if movie_stats and movie_stats.get(movie.title) %}
@@ -215,6 +219,43 @@
             </div>
             {% endfor %}
         </div>
+       <div id="descModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 800px; display: flex; gap: 30px; align-items: center; flex-wrap: wrap; background: #1a1a1a; border: 1px solid #333;">
+        
+        <div style="flex: 1; min-width: 300px;">
+            <h2 id="descModalTitle" style="color: var(--accent-red); margin-top: 0;"></h2>
+            <p id="descModalText" style="line-height: 1.6; color: #ccc; font-size: 0.95rem; margin-bottom: 20px;"></p>
+            <button class="close-btn" onclick="closeDescModal()" style="background: #333; border: 1px solid #444; width: auto; padding: 10px 25px;">Close Analysis</button>
+        </div>
+        
+        <div style="width: 280px; background: #000; padding: 20px; border-radius: 12px; border: 1px solid #222;">
+            <div style="position: relative; height: 180px; width: 180px; margin: 0 auto;">
+                <canvas id="individualPulseChart"></canvas>
+            </div>
+            
+            <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: #aaa;">
+                    <span style="width: 8px; height: 8px; background: #e50914; border-radius: 50%;"></span> Mind-Blowing
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: #aaa;">
+                    <span style="width: 8px; height: 8px; background: #ff69b4; border-radius: 50%;"></span> Heartwarming
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: #aaa;">
+                    <span style="width: 8px; height: 8px; background: #3498db; border-radius: 50%;"></span> Tear-Jerker
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: #aaa;">
+                    <span style="width: 8px; height: 8px; background: #f1c40f; border-radius: 50%;"></span> Edge-of-Seat
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: #aaa;">
+                    <span style="width: 8px; height: 8px; background: #2ecc71; border-radius: 50%;"></span> Pure Joy
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: #aaa;">
+                    <span style="width: 8px; height: 8px; background: #9b59b6; border-radius: 50%;"></span> Thought-Provoking
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
         <div class="feedback-feed">
             <h3 style="border-bottom: 1px solid var(--accent-red); padding-bottom: 10px; margin-bottom: 20px;">Live Community Feed</h3>
@@ -350,6 +391,75 @@
             if (desc) desc.innerText = "Offline: Unable to sync with live pulse.";
         }
     }
+    async function openAnalysisModal(element) {
+    const title = element.getAttribute('data-title');
+    const desc = element.getAttribute('data-desc');
+    
+    // Set text content
+    document.getElementById('descModalTitle').innerText = title;
+    document.getElementById('descModalText').innerText = desc;
+    
+    // Show Modal
+    const modal = document.getElementById('descModal');
+    modal.style.display = 'block';
+
+    try {
+        const response = await fetch(`/api/radar-comparison?m1=${encodeURIComponent(title)}`);
+        const result = await response.json();
+        
+        if (!result.datasets || result.datasets.length === 0) return;
+
+        const ctx = document.getElementById('individualPulseChart').getContext('2d');
+        
+        // Destroy previous instance
+        const existing = Chart.getChart("individualPulseChart");
+        if (existing) existing.destroy();
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure Joy', 'Thought-Provoking'],
+                datasets: [{
+                    data: result.datasets[0].data,
+                    backgroundColor: ['#e50914', '#ff69b4', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6'],
+                    borderWidth: 0,
+                    hoverOffset: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '80%', // Sleek thin doughnut look
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#111',
+                        titleColor: '#e50914',
+                        bodyColor: '#fff',
+                        borderColor: '#333',
+                        borderWidth: 1,
+                        displayColors: true
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true
+                }
+            }
+        });
+    } catch (e) {
+        console.error("Error loading analysis chart:", e);
+    }
+}
+
+function closeDescModal() {
+    document.getElementById('descModal').style.display = 'none';
+}
+
+// Ensure the old close function still works
+function closeDescModal() { 
+    document.getElementById('descModal').style.display = 'none'; 
+}
 
     function updateRealTimeAnalysis(result, m1, m2) {
         if (!result.datasets || result.datasets.length === 0) return;
