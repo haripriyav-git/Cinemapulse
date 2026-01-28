@@ -7,6 +7,7 @@ from collections import Counter
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 from datetime import datetime, date
 from sqlalchemy import func
+from collections import Counter
 
 
 app = Flask(__name__)
@@ -246,9 +247,6 @@ def reset_with_token(token):
 
     return render_template('reset_new_password.html', token=token)
 
-from collections import Counter
-from sqlalchemy import func
-
 @app.route('/dashboard')
 def dashboard():
     # 1. Fetch your existing data
@@ -358,6 +356,5 @@ def logout():
     session.pop('user_email', None)
     return redirect(url_for('index'))
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
