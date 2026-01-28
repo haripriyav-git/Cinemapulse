@@ -332,65 +332,98 @@
         setInterval(initPulseDashboard, 30000);
     });
 
-    async function initPulseDashboard() {
-        const m1Select = document.getElementById('movieSelect1');
-        const m2Select = document.getElementById('movieSelect2');
+   async function initPulseDashboard() {
+    const m1Select = document.getElementById('movieSelect1');
+    const m2Select = document.getElementById('movieSelect2');
+    if (!m1Select) return;
+
+    const m1 = m1Select.value;
+    const m2 = m2Select ? m2Select.value : "";
+
+    // Show a "Syncing" state in the description
+    const descElem = document.getElementById('pulseDescription');
+    descElem.innerHTML = `<span class="blink-dot"></span> Syncing with live community heartbeat...`;
+
+    try {
+        const response = await fetch(`/api/radar-comparison?m1=${encodeURIComponent(m1)}&m2=${encodeURIComponent(m2)}`);
+        const result = await response.json();
         
-        if (!m1Select) return; // Guard against missing elements
+        // 1. Update the Chart
+        const ctx = document.getElementById('pulsePolarChart').getContext('2d');
+        const existing = Chart.getChart("pulsePolarChart");
+        if (existing) existing.destroy();
 
-        const m1 = m1Select.value;
-        const m2 = m2Select ? m2Select.value : "";
+        new Chart(ctx, {
+            type: 'polarArea',
+            data: {
+                labels: labels,
+                datasets: result.datasets.map((ds, i) => ({
+                    label: ds.label,
+                    data: ds.data, // Backend should provide counts or normalized scores
+                    backgroundColor: i === 0 ? vibeColors.map(c => c + 'aa') : 'rgba(255,255,255,0.1)',
+                    borderColor: i === 0 ? '#fff' : '#444',
+                    borderWidth: 1
+                }))
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                animation: { duration: 800, easing: 'easeOutQuart' }, // Smooth real-time transition
+                scales: { r: { grid: { color: '#222' }, ticks: { display: false } } },
+                plugins: { legend: { display: true, position: 'bottom' } }
+            }
+        });
 
-        try {
-            const response = await fetch(`/api/radar-comparison?m1=${encodeURIComponent(m1)}&m2=${encodeURIComponent(m2)}`);
-            const result = await response.json();
-            
-            const canvas = document.getElementById('pulsePolarChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            const existing = Chart.getChart("pulsePolarChart");
-            if (existing) existing.destroy();
+        // 2. Trigger Real-Time Calculations
+        updateRealTimeAnalysis(result, m1, m2);
 
-            new Chart(ctx, {
-                type: 'polarArea',
-                data: {
-                    labels: labels,
-                    datasets: result.datasets.map((ds, i) => ({
-                        label: ds.label,
-                        data: ds.data,
-                        backgroundColor: i === 0 ? vibeColors.map(c => c + 'aa') : 'rgba(255,255,255,0.1)',
-                        borderColor: '#111',
-                        borderWidth: 2
-                    }))
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    scales: { 
-                        r: { 
-                            grid: { color: '#222' }, 
-                            ticks: { display: false },
-                            angleLines: { color: '#333' }
-                        } 
-                    },
-                    plugins: { 
-                        legend: { 
-                            position: 'right', 
-                            labels: { color: '#888', font: { family: 'Poppins', size: 11 } } 
-                        } 
-                    }
-                }
-            });
-
-            // Update Metrics and Conclusion text
-            updateRealTimeAnalysis(result, m1, m2);
-        } catch (e) { 
-            console.error("Dashboard Sync Error:", e); 
-            const desc = document.getElementById('pulseDescription');
-            if (desc) desc.innerText = "Offline: Unable to sync with live pulse.";
-        }
+    } catch (e) { 
+        console.error("Dashboard Sync Error:", e); 
+        descElem.innerText = "Offline: Unable to sync with live pulse.";
     }
+}
+
+function updateRealTimeAnalysis(result, m1, m2) {
+    if (!result.datasets || result.datasets.length === 0) return;
+
+    const dataset1 = result.datasets[0].data;
+    // Calculate Total Pulses (Sum of all vibe counts for the primary movie)
+    const totalPulses = dataset1.reduce((a, b) => a + b, 0);
+    
+    // Find the Peak Vibe (Highest count)
+    const peakIdx = dataset1.indexOf(Math.max(...dataset1));
+    const peakVibe = labels[peakIdx];
+    const peakColor = vibeColors[peakIdx];
+
+    // Update the UI Counters
+    document.getElementById('total-reviews-count').innerText = totalPulses.toLocaleString();
+    const vibeElem = document.getElementById('top-vibe-name');
+    
+    if (totalPulses > 0) {
+        vibeElem.innerText = peakVibe;
+        vibeElem.style.color = peakColor;
+
+        // Dynamic Text Analysis
+        let analysisHTML = `
+            <strong>Live Insight:</strong> <em>${m1}</em> has received <strong>${totalPulses}</strong> community pulses. 
+            The audience is currently resonating most with a <span style="color:${peakColor}"><strong>${peakVibe}</strong></span> vibe. 
+            This suggests the film's current impact is largely ${peakVibe.toLowerCase()}-driven.
+        `;
+
+        if (m2 && result.datasets[1]) {
+            const dataset2 = result.datasets[1].data;
+            const total2 = dataset2.reduce((a, b) => a + b, 0);
+            const peakIdx2 = dataset2.indexOf(Math.max(...dataset2));
+            analysisHTML += `<br><br><strong>Comparison:</strong> <em>${m2}</em> (${total2} pulses) is trending toward <strong>${labels[peakIdx2]}</strong>, 
+            showing a ${peakVibe === labels[peakIdx2] ? 'similar' : 'different'} emotional trajectory.`;
+        }
+        
+        document.getElementById('pulseDescription').innerHTML = analysisHTML;
+    } else {
+        vibeElem.innerText = "--";
+        document.getElementById('pulseDescription').innerText = "Waiting for the first pulses to be recorded for this title...";
+    }
+}
     async function openAnalysisModal(element) {
     const title = element.getAttribute('data-title');
     const desc = element.getAttribute('data-desc');

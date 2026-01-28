@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from collections import Counter
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
+from datetime import datetime, date
 
 
 app = Flask(__name__)
@@ -265,6 +266,7 @@ def dashboard():
                            movies=MOVIES_DATA, 
                            feedbacks=all_feedbacks, 
                            movie_stats=movie_stats) 
+
 @app.route('/api/radar-comparison')
 def radar_comparison():
     m1 = request.args.get('m1')
