@@ -219,3 +219,22 @@ input {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+#total-reviews-count {
+    transition: all 0.4s ease-in-out;
+    font-weight: 800;
+    text-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+#total-reviews-count {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: inline-block;
+}
+
+/* Add this class in JS when the value changes */
+.pulse-trigger {
+    transform: scale(1.3);
+    filter: brightness(1.2);
+}
+.movie-card { 
+    /* ... your existing styles ... */
+    transition: opacity 0.3s ease, transform 0.3s ease, display 0.3s allow-discrete; 
+}

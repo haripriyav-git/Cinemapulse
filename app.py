@@ -6,6 +6,7 @@ from datetime import datetime
 from collections import Counter
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 from datetime import datetime, date
+from sqlalchemy import func
 
 
 app = Flask(__name__)
@@ -245,45 +246,87 @@ def reset_with_token(token):
 
     return render_template('reset_new_password.html', token=token)
 
+from collections import Counter
+from sqlalchemy import func
+
 @app.route('/dashboard')
 def dashboard():
-    if 'user_email' not in session:
-        return redirect(url_for('login'))
-    
+    # 1. Fetch your existing data
+    movies_list = MOVIES_DATA 
     all_feedbacks = Feedback.query.all()
-    movie_stats = {}
     
-    for movie in MOVIES_DATA:
-        vibe_list = [f.vibe for f in all_feedbacks if f.movie_title == movie['title']]
-        total = len(vibe_list)
-        if total > 0:
-            counts = Counter(vibe_list)
-            movie_stats[movie['title']] = {vibe: (count / total) * 100 for vibe, count in counts.items()}
+    # 2. Re-initialize movie_stats to avoid the NameError
+    movie_stats = {}
+    vibe_labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking']
+
+    # 3. Calculate percentages for each movie's progress bars
+    for movie in movies_list:
+        m_title = movie['title']
+        # Get all vibes submitted for this specific movie
+        m_vibes = [f.vibe for f in all_feedbacks if f.movie_title == m_title]
+        
+        if m_vibes:
+            counts = Counter(m_vibes)
+            total = len(m_vibes)
+            # Create a dictionary of percentages for the HTML width styles
+            movie_stats[m_title] = {
+                vibe: (counts.get(vibe, 0) / total) * 100 for vibe in vibe_labels
+            }
         else:
-            movie_stats[movie['title']] = {}
+            # Fallback for movies with no reviews yet
+            movie_stats[m_title] = {vibe: 0 for vibe in vibe_labels}
 
+    # 4. Dynamic Metrics (Top Movie & Top Vibe)
+    top_movie_query = db.session.query(
+        Feedback.movie_title, func.count(Feedback.id)
+    ).group_by(Feedback.movie_title).order_by(func.count(Feedback.id).desc()).first()
+    
+    display_top_movie = top_movie_query[0] if top_movie_query else (movies_list[0]['title'] if movies_list else "N/A")
+
+    top_vibe_query = db.session.query(
+        Feedback.vibe, func.count(Feedback.id)
+    ).group_by(Feedback.vibe).order_by(func.count(Feedback.id).desc()).first()
+    
+    vibe_emojis = {'Mind-Blowing': '🤯', 'Heartwarming': '❤️', 'Tear-Jerker': '😢', 'Edge-of-Seat': '⚡', 'Pure-Joy': '😊', 'Thought-Provoking': '🤔'}
+    display_top_vibe = f"{top_vibe_query[0]} {vibe_emojis.get(top_vibe_query[0], '')}" if top_vibe_query else "Waiting for Pulses..."
+
+    # 5. Send everything to the template
     return render_template('dashboard.html', 
-                           movies=MOVIES_DATA, 
-                           feedbacks=all_feedbacks, 
-                           movie_stats=movie_stats) 
-
+                           movies=movies_list, 
+                           feedbacks=all_feedbacks,
+                           top_movie=display_top_movie,
+                           top_vibe=display_top_vibe,
+                           movie_stats=movie_stats)
 @app.route('/api/radar-comparison')
 def radar_comparison():
-    m1 = request.args.get('m1')
-    m2 = request.args.get('m2')
+    movie_title = request.args.get('m1')
     
-    labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure Joy', 'Thought-Provoking']
+    # These labels must match your JavaScript exactly
+    labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking']
     
-    def get_counts(title):
-        if not title: return [0] * 6
-        return [Feedback.query.filter_by(movie_title=title, vibe=v).count() for v in labels]
+    if not movie_title:
+        return jsonify({'labels': labels, 'datasets': [{'data': [0] * 6}]})
 
-    datasets = [{'label': m1, 'data': get_counts(m1)}]
-    if m2:
-        datasets.append({'label': m2, 'data': get_counts(m2)})
+    # Query the database for vibes related to this movie
+    # We use func.count to let the database do the heavy lifting
+    vibe_counts = db.session.query(
+        Feedback.vibe, 
+        func.count(Feedback.id)
+    ).filter(Feedback.movie_title == movie_title).group_by(Feedback.vibe).all()
 
-    return jsonify({'labels': labels, 'datasets': datasets})
-    
+    # Convert query results into a dictionary: {'Mind-Blowing': 5, ...}
+    counts_dict = {vibe: count for vibe, count in vibe_counts}
+
+    # Map the dictionary to our labels list to ensure the order is correct
+    data = [counts_dict.get(label, 0) for label in labels]
+
+    return jsonify({
+        'labels': labels,
+        'datasets': [{
+            'label': movie_title,
+            'data': data
+        }]
+    })
 @app.route('/submit_feedback', methods=['POST']) 
 def submit_feedback():
     if 'user_email' not in session:
