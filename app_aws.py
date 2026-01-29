@@ -7,40 +7,36 @@ from collections import Counter
 from itsdangerous import URLSafeTimedSerializer
 from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = 'cinemapulse_2026_key'
+
+# Security settings
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'cinemapulse_2026_key')
+app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('FLASK_SALT', 'cinema-pulse-salt-secure')
 
 # --- AWS Configuration ---
 REGION = 'us-east-1' 
-
-
 dynamodb = boto3.resource('dynamodb', region_name=REGION)
 sns = boto3.client('sns', region_name=REGION)
 
-# DynamoDB Tables (Ensure these are created in AWS Console)
-# Partition Key for both should be 'email' or 'id' as specified below
-users_table = dynamodb.Table('CinemaUsers')      # Partition Key: email (String)
-feedback_table = dynamodb.Table('CinemaFeedback') # Partition Key: id (String)
-SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:604665149129:aws_capstone_topic' # Replace with your Topic ARN
-
-app.config['SECURITY_PASSWORD_SALT'] = 'cinema-pulse-salt-secure'
+users_table = dynamodb.Table('CinemaUsers')      
+feedback_table = dynamodb.Table('CinemaFeedback') 
+SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:604665149129:aws_capstone_topic'
 
 def send_sns_notification(subject, message):
     try:
-
         sns.publish(TopicArn=SNS_TOPIC_ARN, Subject=subject, Message=message)
-
     except ClientError as e:
         print(f"SNS Error: {e}")
 
 # --- Token Logic ---
 def generate_token(email):
-    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    serializer = URLSafeTimedSerializer(app.secret_key)
     return serializer.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
 
 def confirm_token(token, expiration=1800):
-    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    serializer = URLSafeTimedSerializer(app.secret_key)
     try:
         email = serializer.loads(token, salt=app.config['SECURITY_PASSWORD_SALT'], max_age=expiration)
     except:
@@ -48,7 +44,7 @@ def confirm_token(token, expiration=1800):
     return email
 
 # --- Static Movie Data ---
-MOVIES_DATA =  [
+MOVIES_DATA = [
     {
         "rank": 1, "title": "The Shawshank Redemption", "year": 1994, "rating": 9.3,
         "lang": "English", "genre": "Drama",
@@ -171,7 +167,34 @@ MOVIES_DATA =  [
     }
 ]
 
-# --- Routes ---
+# --- AWS Ready API for Individual Doughnut/Radar Charts ---
+@app.route('/api/radar-comparison')
+def radar_comparison():
+    movie_title = request.args.get('m1')
+    labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking']
+    
+    if not movie_title:
+        return jsonify({'labels': labels, 'datasets': [{'data': [0] * 6}]})
+
+    try:
+        # Use DynamoDB Scan with Filter instead of SQL
+        response = feedback_table.scan(FilterExpression=Attr('movie_title').eq(movie_title))
+        items = response.get('Items', [])
+        counts_dict = Counter([item['vibe'] for item in items if 'vibe' in item])
+        data = [counts_dict.get(label, 0) for label in labels]
+
+        return jsonify({
+            'labels': labels,
+            'datasets': [{
+                'label': movie_title,
+                'data': data,
+                'backgroundColor': ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
+            }]
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- Standard Routes ---
 
 @app.route('/')
 def index():
@@ -190,115 +213,120 @@ def login():
     if request.method == 'POST':
         email = request.form.get('username')
         password = request.form.get('password')
-        
         response = users_table.get_item(Key={'email': email})
-        if 'Item' in response and response['Item']['password'] == password:
+        if 'Item' in response and check_password_hash(response['Item']['password'], password):
             session['user_email'] = email
             return redirect(url_for('dashboard'))
-        
-        return render_template('login.html', error="Invalid credentials.")
+        flash("Invalid credentials.", "danger")
     return render_template('login.html')
 
 @app.route('/signup', methods=['POST'])
 def signup():
     email = request.form.get('email')
     password = request.form.get('password')
+    if 'Item' in users_table.get_item(Key={'email': email}):
+        flash("Account already exists.", "warning")
+        return redirect(url_for('login'))
     
-    response = users_table.get_item(Key={'email': email})
-    if 'Item' in response:
-        return render_template('login.html', error="Account already exists.")
-    
-    users_table.put_item(Item={'email': email, 'password': password})
+    users_table.put_item(Item={'email': email, 'password': generate_password_hash(password)})
     session['user_email'] = email
-    send_sns_notification("New CinemaPulse User", f"User {email} has joined the platform!")
+    send_sns_notification("New CinemaPulse User", f"User {email} has joined!")
     return redirect(url_for('dashboard'))
+
+# ... (Keep your imports and AWS config as they are)
+
+# --- Added Forgot Password Route ---
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        # Check if user exists in DynamoDB
+        response = users_table.get_item(Key={'email': email})
+        
+        if 'Item' in response:
+            token = generate_token(email)
+            # Use _external=True to generate a full URL (http://your-ec2-ip:5000/...)
+            reset_url = url_for('reset_with_token', token=token, _external=True)
+            
+            # Send the reset link via SNS
+            subject = "CinemaPulse - Password Reset Request"
+            message = f"Hello,\n\nYou requested a password reset. Click the link below to set a new password:\n{reset_url}\n\nThis link expires in 30 minutes."
+            send_sns_notification(subject, message)
+            
+            flash("If that email is registered, a reset link has been sent via SNS.", "info")
+            return redirect(url_for('login'))
+        
+        flash("Email not found.", "danger")
+    return render_template('forgot_password.html')
+
+# --- Added Reset Password Route ---
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_with_token(token):
+    # Verify the token
+    email = confirm_token(token)
+    if not email:
+        flash("The reset link is invalid or has expired.", "danger")
+        return redirect(url_for('forgot_password'))
+
+    if request.method == 'POST':
+        new_password = request.form.get('password')
+        hashed_password = generate_password_hash(new_password)
+        
+        # Update the password in DynamoDB
+        try:
+            users_table.update_item(
+                Key={'email': email},
+                UpdateExpression="set password = :p",
+                ExpressionAttributeValues={':p': hashed_password}
+            )
+            flash("Your password has been updated! You can now login.", "success")
+            return redirect(url_for('login'))
+        except ClientError as e:
+            print(e.response['Error']['Message'])
+            flash("An error occurred. Please try again.", "danger")
+
+    return render_template('reset_new_password.html', token=token)
+
+# ... (Rest of your standard routes: login, signup, dashboard, etc.)
 
 @app.route('/dashboard')
 def dashboard():
     if 'user_email' not in session:
         return redirect(url_for('login'))
 
-    # Fetch all feedback from DynamoDB
-    all_feedbacks = feedback_table.scan().get('Items', [])
-    
+    try:
+        all_feedbacks = feedback_table.scan().get('Items', [])
+    except:
+        all_feedbacks = []
+
     movie_stats = {}
     vibe_labels = ['Mind-Blowing', 'Heartwarming', 'Tear-Jerker', 'Edge-of-Seat', 'Pure-Joy', 'Thought-Provoking']
 
     for movie in MOVIES_DATA:
         m_title = movie['title']
         m_vibes = [f['vibe'] for f in all_feedbacks if f['movie_title'] == m_title]
-        
-        if m_vibes:
-            counts = Counter(m_vibes)
-            total = len(m_vibes)
-            movie_stats[m_title] = {v: (counts.get(v, 0) / total) * 100 for v in vibe_labels}
-        else:
-            movie_stats[m_title] = {v: 0 for v in vibe_labels}
+        counts = Counter(m_vibes)
+        total = len(m_vibes) or 1
+        movie_stats[m_title] = {v: (counts.get(v, 0) / total) * 100 for v in vibe_labels}
 
-    # Dynamic Metrics using scan (for production, consider a Global Secondary Index)
-    top_movie = "N/A"
-    if all_feedbacks:
-        movie_counts = Counter([f['movie_title'] for f in all_feedbacks])
-        top_movie = movie_counts.most_common(1)[0][0]
-
-    return render_template('dashboard.html', 
-                           movies=MOVIES_DATA, 
-                           feedbacks=all_feedbacks,
-                           top_movie=top_movie,
-                           movie_stats=movie_stats)
-
-@app.route('/forgot-password', methods=['GET', 'POST'])
-def forgot_password():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        if email in USERS:
-            token = generate_token(email)
-            reset_url = url_for('reset_with_token', token=token, _external=True)
-            
-            msg = Message("CinemaPulse - Reset Link", recipients=[email])
-            msg.body = f"Click here to reset your password: {reset_url}\nValid for 30 minutes."
-            mail.send(msg)
-            
-            return render_template('forgot_password.html', success_email=email)
-        return render_template('forgot_password.html', error="Email not found.")
-    return render_template('forgot_password.html')
-
-@app.route('/reset-password/<token>', methods=['GET', 'POST'])
-def reset_with_token(token):
-    email = confirm_token(token)
-    if not email:
-        return "The reset link is invalid or has expired.", 400
-
-    if request.method == 'POST':
-        new_password = request.form.get('password')
-        USERS[email] = new_password
-        flash('Password successfully updated!', 'success')
-        return redirect(url_for('login'))
-
-    return render_template('reset_new_password.html', token=token)
+    top_movie = Counter([f['movie_title'] for f in all_feedbacks]).most_common(1)[0][0] if all_feedbacks else "N/A"
+    return render_template('dashboard.html', movies=MOVIES_DATA, feedbacks=all_feedbacks, top_movie=top_movie, movie_stats=movie_stats)
 
 @app.route('/submit_feedback', methods=['POST'])
 def submit_feedback():
-    if 'user_email' not in session:
-        return redirect(url_for('login'))
-    
+    if 'user_email' not in session: return redirect(url_for('login'))
     email = session['user_email']
-    user_display_name = email.split('@')[0].capitalize()
-    
-    feedback_id = str(uuid.uuid4())
-    new_entry = {
-        'id': feedback_id,
-        'user_name': user_display_name,
+    feedback_table.put_item(Item={
+        'id': str(uuid.uuid4()),
+        'user_name': email.split('@')[0].capitalize(),
         'user_email': email,
         'movie_title': request.form.get('movie_title'),
         'rating': int(request.form.get('rating', 10)),
         'vibe': request.form.get('vibe'),
         'comment': request.form.get('comment'),
         'date_posted': datetime.utcnow().isoformat()
-    }
-    
-    feedback_table.put_item(Item=new_entry)
-    flash("Pulse recorded! Thank you for sharing.")
+    })
+    flash("Pulse recorded!")
     return redirect(url_for('dashboard'))
 
 @app.route('/logout')
@@ -307,4 +335,4 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)
