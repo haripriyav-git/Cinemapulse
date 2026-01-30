@@ -29,10 +29,14 @@ git clone https://github.com/haripriyav-git/cinemapulse.git
 cd cinemapulse
 Create a virtual environment
 
+
+
 Bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 Install dependencies
+
+
 
 Bash
 pip install -r requirements.txt
