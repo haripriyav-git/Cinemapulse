@@ -17,7 +17,7 @@ Backend: Python, Flask
 
 Frontend: HTML5, CSS3, JavaScript (Jinja2 templates)
 
-Database: SQLite / MySQL (mention which one you used)
+Database: SQLite
 
 Environment: Virtualenv
 
@@ -25,7 +25,7 @@ Environment: Virtualenv
 Clone the repository
 
 Bash
-git clone https://github.com/yourusername/cinemapulse.git
+git clone https://github.com/haripriyav-git/cinemapulse.git
 cd cinemapulse
 Create a virtual environment
 
