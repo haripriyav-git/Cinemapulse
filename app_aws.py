@@ -9,6 +9,7 @@ from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 app = Flask(__name__)
 
 # Security settings

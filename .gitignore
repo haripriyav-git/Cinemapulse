@@ -1,0 +1,29 @@
+# --- Python/Flask ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+instance/
+.pytest_cache/
+
+# --- Database ---
+# Keeps your data private and prevents conflicts on AWS
+*.db
+*.sqlite3
+cinema.db
+
+# --- Static Assets Cache ---
+static/.webassets-cache
+static/styles/*.css.map
+
+# --- IDE & OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- AWS Deployment ---
+.aws-sam/
+.aws/

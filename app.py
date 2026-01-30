@@ -2,12 +2,12 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import sqlite3
 from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 from collections import Counter
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 from datetime import datetime, date
 from sqlalchemy import func
 from collections import Counter
+
 
 
 app = Flask(__name__)
