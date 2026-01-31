@@ -168,7 +168,6 @@ MOVIES_DATA = [
     }
 ]
 
-# --- AWS Ready API for Individual Doughnut/Radar Charts ---
 @app.route('/api/radar-comparison')
 def radar_comparison():
     movie_title = request.args.get('m1')
