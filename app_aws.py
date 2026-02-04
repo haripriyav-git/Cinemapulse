@@ -23,7 +23,7 @@ sns = boto3.client('sns', region_name=REGION)
 
 users_table = dynamodb.Table('CinemaUsers')      
 feedback_table = dynamodb.Table('CinemaFeedback') 
-SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:604665149129:aws_capstone_topic'
+SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:911167913731:Cinemapulse'
 
 def send_sns_notification(subject, message):
     try:
