@@ -16,10 +16,8 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'cinemapulse_2026_key')
 app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('FLASK_SALT', 'cinema-pulse-salt-secure')
 
-# --- AWS Configuration ---
-REGION = 'us-east-1' 
-dynamodb = boto3.resource('dynamodb', region_name=REGION)
-sns = boto3.client('sns', region_name=REGION)
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+sns = boto3.client('sns', region_name='us-east-1')
 
 users_table = dynamodb.Table('CinemaUsers')      
 feedback_table = dynamodb.Table('CinemaFeedback') 
