@@ -19,8 +19,8 @@ app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('FLASK_SALT', 'cinema-puls
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 sns = boto3.client('sns', region_name='us-east-1')
 
-users_table = dynamodb.Table('CinemaUsers')      
-feedback_table = dynamodb.Table('CinemaFeedback') 
+users_table = dynamodb.Table('Cinemausers')      
+feedback_table = dynamodb.Table('Cinemafeedback') 
 SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:911167913731:Cinemapulse'
 
 def send_sns_notification(subject, message):
